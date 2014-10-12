@@ -1,0 +1,36 @@
+#TODO example gradings
+# debt_ceiling 15000
+
+b_cost_per_line 10
+c_cost_per_line 20
+d_cost_per_line 40
+f_cost_per_line 100
+# todo_cost 500
+
+# debt_per_reference_to blah
+
+# points_per_regex_match REGEX, points
+
+#rubocop/cane integration debt for style violations
+
+#every line over x ideal file size is y points of debt
+
+#whitelist/blacklist API: TODO
+
+#multipliers for important files
+
+#ditch/augment module eval and use below or something
+
+# class DebtRule
+#   def measure_file(filename, metrics)
+#     cost = 0
+
+#     cost += 0 if metrics.rubycritic.grade == :a
+#     cost += 10 if metrics.rubycritic.grade == :b
+
+#     churn = measure_churn(filename)
+#     cost += whatever if churn > something
+#   end
+
+#   def measure_churn...
+# end 
