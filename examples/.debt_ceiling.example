@@ -1,0 +1,6 @@
+b_cost_per_line 10
+c_cost_per_line 20
+d_cost_per_line 40
+f_cost_per_line 100
+
+extension_file_path "./debt.rb"

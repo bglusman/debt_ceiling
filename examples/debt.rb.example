@@ -1,0 +1,19 @@
+module DebtCeiling
+  class Debt
+    #replace the DebtCeiling cost calculation per file with your own
+
+
+    def measure_debt
+      #calculcate entire cost based on #file_attributes
+      #or return false/nil to use defaults if you want to conditionally
+      #override default cost calculation
+    end
+
+    #OR do your own calcuation first, and add defaults on top of that
+    def augment_debt
+      #output additional cost beyond defaults based on #file_attributes
+    end
+
+    #augment_custom_debt is only called if measure_debt is undefined or returns nil/false
+  end
+end

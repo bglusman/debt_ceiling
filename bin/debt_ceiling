@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/debt_ceiling"
+if File.exists?(Dir.pwd + '/.debt_ceiling')
+   File.open(Dir.pwd + "/.debt_ceiling") {|f| DebtCeiling.module_eval(f.read)}
+elsif File.exists?(Dir.home + '/.debt_ceiling')
+   File.open(Dir.home + '/.debt_ceiling') {|f| DebtCeiling.module_eval(f.read)}
+else
+  puts "
+  ***NOTICE:***
+  Using example .debt_ceiling file, which can be copied and customized from
+  #{File.dirname(File.dirname(`gem which debt_ceiling`.chop)) + '/examples/.debt_ceiling.example'}\n
+  place .debt_ceiling file in project directory and/or home directories, debt_ceiling looks
+  at pwd first for ./debt_ceiling and then at ~/.debt_ceiling and defaults to example
+  if neither is found\n\n"
+
+   File.open(File.dirname(File.dirname(`gem which debt_ceiling`.chop)) +
+      '/examples/.debt_ceiling.example') {|f| DebtCeiling.module_eval(f.read)}
+end
+
+extension_path = DebtCeiling.current_extension_file_path
+load extension_path if File.exists?(extension_path)
+
+DebtCeiling.calculate(ARGV[0] ? ARGV[0] : ".")
