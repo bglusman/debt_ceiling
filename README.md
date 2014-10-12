@@ -1,4 +1,5 @@
 #DebtCeiling
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ###
 Work in progress, trying to use some automatic heuristic plus manual mechanisms to help visibility and tracking of technical debt.
