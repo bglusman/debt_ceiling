@@ -1,4 +1,3 @@
-require 'ripper'
 require_relative 'debt_ceiling/accounting'
 require_relative 'debt_ceiling/debt'
 
@@ -19,6 +18,17 @@ module DebtCeiling
   def current_extension_file_path
     @extension_file_path
   end
+
+  def blacklist_matching(matchers)
+    @blacklist = matchers.map {|matcher| Regexp.new(matcher)}
+  end
+
+  def whitelist_matching(matchers)
+    @whitelist =  matchers.map {|matcher| Regexp.new(matcher)}
+  end
+  attr_reader :blacklist, :whitelist
+  @blacklist = []
+  @whitelist = []
 
   GRADE_MAP = {a: 0, b: 10, c: 20, d: 40, f: 100} #arbitrary default grades for now
   GRADE_MAP.keys.each do |grade|

@@ -4,3 +4,8 @@ d_cost_per_line 40
 f_cost_per_line 100
 
 extension_file_path "./debt.rb"
+
+whitelist_matching %w(app lib)
+#or
+#blacklist_matching %w(schema.rb routes.rb)
+#one or the other, not both or raises error

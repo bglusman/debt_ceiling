@@ -5,6 +5,15 @@
 
 ### Work in progress, trying to use some automatic heuristic plus manual mechanisms to help visibility and tracking of technical debt.
 
+Current features include:
+* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line
+* Whitelisting/blacklisting files by filename
+* Modifying or replacing default calculation on a per file basis
+* Reporting the single greatest source of debt based on your definitions
+* Reporting total debt for the git repo based on your definitions
+
+These features are largely are demonstrated/discussed in [examples/.debt_ceiling](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.example) which demonstrates a simple DSL for configuring debt ceiling, and additional customization is supported via two method hooks in the debt class, which debt_ceiling will load from a provided extension_file_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
+
 Current plan is to configure/customize the weight given to heuristic grade
 based first on a simple DSL in a .debt_ceiling file in the project's home directory, and if additional customization is desired, pass a path to 
 `extension_file_path` command in the DSL file to a file defining DebtCeiling::Debt like the one in examples directory, and replace/augment it's methods with your own additional calculation per file.
@@ -35,8 +44,6 @@ points_per_regex_match REGEX, 500 # seems like an alias for above maybe, nix?
 rubocop/cane integration debt for style violations
 
 every line over x ideal file size is y points of debt
-
-define an API/DSL syntax to whitelist/blacklist files for debt calculation
 
 multipliers for important files
 
