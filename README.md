@@ -2,8 +2,7 @@
 
 #DebtCeiling
 
-
-### Work in progress, trying to use some automatic heuristic plus manual mechanisms to help visibility and tracking of technical debt.
+### Work in progress, feedback and PR's appreciated
 
 Current features include:
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line
@@ -13,6 +12,8 @@ Current features include:
 * Reporting total debt for the git repo based on your definitions
 * Running the binary from a test suite to fail if debt ceiling is exceeded
 * Running the binary from a test suite to fail if debt deadline is missed
+
+To integrate in a test suite, use `set_debt_ceiling` and/or `debt_reduction_target_and_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
 
 These features are largely are demonstrated/discussed in [examples/.debt_ceiling](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.example) which demonstrates configuring debt ceiling
 

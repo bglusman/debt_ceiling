@@ -6,6 +6,17 @@ module DebtCeiling
   extend self
 
   def calculate(dir=".")
+    if File.exists?(Dir.pwd + '/.debt_ceiling')
+       File.open(Dir.pwd + "/.debt_ceiling") {|f| DebtCeiling.module_eval(f.read)}
+    elsif File.exists?(Dir.home + '/.debt_ceiling')
+       File.open(Dir.home + '/.debt_ceiling') {|f| DebtCeiling.module_eval(f.read)}
+    else
+      puts "No .debt_ceiling configuration file detected in #{Dir.pwd} or ~/, using defaults"
+    end
+
+    extension_path = DebtCeiling.current_extension_file_path
+    load extension_path if extension_path && File.exists?(extension_path)
+
     @debt = DebtCeiling::Accounting.calculate(dir)
     evaluate
   end
