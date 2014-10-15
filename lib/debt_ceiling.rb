@@ -1,13 +1,13 @@
 require_relative 'debt_ceiling/accounting'
 require_relative 'debt_ceiling/debt'
-
-
+require 'chronic'
 
 module DebtCeiling
   extend self
 
   def calculate(dir=".")
-    DebtCeiling::Accounting.process_directory(dir)
+    @debt = DebtCeiling::Accounting.calculate(dir)
+    evaluate
   end
 
   @extension_file_path = "#{Dir.pwd}/debt.rb"
@@ -26,7 +26,30 @@ module DebtCeiling
   def whitelist_matching(matchers)
     @whitelist =  matchers.map {|matcher| Regexp.new(matcher)}
   end
-  attr_reader :blacklist, :whitelist
+
+  def set_debt_ceiling(value)
+    @ceiling_amount = value
+  end
+
+  def debt_reduction_target_and_date(target_value, date_to_parse)
+    @reduction_target = target_value
+    @reduction_date   = Chronic.parse(date_to_parse)
+  end
+
+  def evaluate
+    if ceiling_amount && ceiling_amount <= debt
+      fail_test
+    elsif reduction_target && reduction_target <= debt && 
+          Time.now > reduction_date
+      fail_test
+    end
+  end
+
+  def fail_test
+    Kernel.exit 1
+  end
+
+  attr_reader :blacklist, :whitelist, :ceiling_amount, :reduction_date, :reduction_target, :debt
   @blacklist = []
   @whitelist = []
 

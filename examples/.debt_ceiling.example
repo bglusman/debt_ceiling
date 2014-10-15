@@ -1,11 +1,19 @@
+set_debt_ceiling 500
+#exceeding this will fail a test, if you run debt_ceiling binary from test suite
+debt_reduction_target_and_date 100, 'Jan 1 2015'
+#exceeding this will fail after the target date (parsed by Chronic)
+
+#set the multipliers per line of code in a file with each letter grade
 b_cost_per_line 10
 c_cost_per_line 20
 d_cost_per_line 40
 f_cost_per_line 100
 
+#load custom debt calculations (see examples/debt.rb) from this path
 extension_file_path "./debt.rb"
 
+#only count debt scores for files matching these strings (converted to regexes)
 whitelist_matching %w(app lib)
 #or
+#exclude debt scores for files matching these strings (commented as mutually exclusive)
 #blacklist_matching %w(schema.rb routes.rb)
-#one or the other, not both or raises error
