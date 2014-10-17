@@ -4,6 +4,8 @@
 
 ### Work in progress, feedback and PR's appreciated
 
+Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via static analysis as part of your application's test suite.  Eventually perhaps will aid in visualizing tech debt as a graph or graphs (breakind down debt into various categories and sources).
+
 Current features include:
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line
 * Whitelisting/blacklisting files by matching path/filename
