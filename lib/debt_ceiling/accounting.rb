@@ -6,8 +6,16 @@ module DebtCeiling
     TargetDeadlineMissed = Class.new(StandardError)
     class << self
       def calculate(path)
-        modules = Rubycritic::Orchestrator.new.critique([path])
-        debts      = construct_debts(modules)
+        #temporarily use Rubycritic internals until they provide an API
+        require "rubycritic/modules_initializer"
+        require "rubycritic/analysers/complexity"
+        require "rubycritic/analysers/smells/flay"
+
+        analysed_modules = Rubycritic::ModulesInitializer.init([path])
+        [Rubycritic::Analyser::Complexity, Rubycritic::Analyser::FlaySmells].each do |analyser|
+          analyser.new(analysed_modules).run
+        end
+        debts      = construct_debts(analysed_modules)
         max_debt   = debts.max_by(&:to_i)
         total_debt = debts.map(&:to_i).reduce(:+)
         puts "Current total tech debt: #{total_debt}"
