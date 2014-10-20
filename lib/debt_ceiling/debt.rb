@@ -17,7 +17,7 @@ module DebtCeiling
       if self.respond_to?(:measure_debt)
         cost = self.public_send(:measure_debt)
       end
-      if !cost
+      unless cost
         cost = if self.respond_to?(:augment_debt)
           self.public_send(:augment_debt) || 0
         else
@@ -33,7 +33,7 @@ module DebtCeiling
     def valid_debt?
       black_empty = DebtCeiling.blacklist.empty?
       white_empty = DebtCeiling.whitelist.empty?
-      raise DoNotWhitelistAndBlacklistSimulateneously if (!black_empty && !white_empty)
+      raise DoNotWhitelistAndBlacklistSimulateneously unless (black_empty && white_empty)
       (black_empty && white_empty) ||
       (black_empty && self.class.whitelist_includes?(self)) ||
       (white_empty && !self.class.blacklist_includes?(self))
