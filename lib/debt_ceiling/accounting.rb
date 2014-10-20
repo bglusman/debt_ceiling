@@ -17,7 +17,7 @@ module DebtCeiling
         end
         debts      = construct_debts(analysed_modules)
         max_debt   = debts.max_by(&:to_i)
-        total_debt = debts.map(&:to_i).reduce(:+)
+        total_debt = debts.map(&:to_i).reduce(&:+)
         puts "Current total tech debt: #{total_debt}"
         puts "Largest source of debt is: #{max_debt.file_attributes.analysed_module.name} at #{max_debt.to_i}"
         total_debt
