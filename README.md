@@ -70,6 +70,8 @@ every line over x ideal file size is y points of debt
 
 multipliers for important files
 
+visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
+
 include one of the JS complexity/debt analysis libraries below, or another if anyone had another suggestion: 
 
 * https://github.com/es-analysis/plato
