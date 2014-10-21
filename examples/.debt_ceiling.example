@@ -18,7 +18,7 @@ cost_per_todo 50
 debt_per_reference_to 'DEPRECATED_API', 20
 
 
-#only count debt scores for files matching these strings (converted to regexes)
+#only count debt scores for file paths matching these strings (converted to regexes)
 whitelist_matching %w(app lib)
 #or
 #exclude debt scores for files matching these strings (commented as mutually exclusive)
