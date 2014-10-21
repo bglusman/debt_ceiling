@@ -54,18 +54,11 @@ Right now it lacks all tests...  feel free to open a PR!
 
 I'll try and add test coverage where it makes sense as API matures.
 
-## TODO: planned features/ideas
-
-todo_cost 500      #cost per comment matching /TODO/
-
-debt_per_reference_to deprecated_regex, 500 # help transition away from deprecated APIs
-
-points_per_regex_match REGEX, 500 # seems like an alias for above maybe, nix?
-
-
-### Other ideas:
+### Improvement ideas:
 
 rubocop/cane integration debt for style violations
+
+default/custom points per reek smell detected (not currently part of rubycritic grading, despite integration)
 
 every line over x ideal file size is y points of debt
 
