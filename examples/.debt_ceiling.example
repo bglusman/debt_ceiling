@@ -12,6 +12,12 @@ f_cost_per_line 100
 #load custom debt calculations (see examples/debt.rb) from this path
 extension_file_path "./debt.rb"
 
+#below two both same mechanic, todo just assumes capital TODO as string
+cost_per_todo 50
+
+debt_per_reference_to 'DEPRECATED_API', 20
+
+
 #only count debt scores for files matching these strings (converted to regexes)
 whitelist_matching %w(app lib)
 #or

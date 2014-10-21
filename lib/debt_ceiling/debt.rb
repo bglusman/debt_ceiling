@@ -2,7 +2,7 @@ module DebtCeiling
   class Debt
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
-    attr_reader :file_attributes, :path, :analysed_module, :module_name, :linecount
+    attr_reader :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
     attr_accessor :debt_amount
     def initialize(file_attributes)
       @file_attributes  = file_attributes
@@ -10,6 +10,7 @@ module DebtCeiling
       @analysed_module  = file_attributes.analysed_module
       @module_name      = file_attributes.name
       @linecount        = file_attributes.linecount
+      @source_code      = file_attributes.source_code
       default_measure_debt if valid_debt?
     end
 
@@ -26,8 +27,19 @@ module DebtCeiling
         letter_grade = file_attributes.analysed_module.rating.to_s.downcase
         cost_per_line = DebtCeiling.public_send("#{letter_grade}_current_cost_per_line")
         cost += file_attributes.linecount * cost_per_line
+        cost += debt_from_source_code_rules
       end
       self.debt_amount = cost
+    end
+
+    def debt_from_source_code_rules
+      text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
+      DebtCeiling.deprecated_reference_pairs.map {|string, value|
+        text_match_debt(string, value.to_i) }.inject(&:+).to_i
+    end
+
+    def text_match_debt(string, cost)
+      source_code.scan(string).count * cost
     end
 
     def valid_debt?
@@ -45,6 +57,10 @@ module DebtCeiling
 
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.detect {|filename| filename.match debt.path }
+    end
+
+    def name
+      file_attributes.analysed_module.name || path.to_s.split('/').last
     end
 
     def to_i

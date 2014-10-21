@@ -7,11 +7,12 @@
 Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via static analysis as part of your application's test suite.  Eventually perhaps will aid in visualizing tech debt as a graph or graphs (breakind down debt into various categories and sources).
 
 Current features include:
-* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line
+* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line (add FULL_ANALYSIS=true for a lengthier analysis by RubyCritic including churn and more code smells, but same grading logic, made available for use by hooks)
 * Whitelisting/blacklisting files by matching path/filename
 * Modifying or replacing default calculation on a per file basis
 * Reporting the single greatest source of debt based on your definitions
 * Reporting total debt for the git repo based on your definitions
+* Adding cost for TODOs or deprecated references you specify (see .debt_ceiling.example)
 * Running the binary from a test suite to fail if debt ceiling is exceeded
 * Running the binary from a test suite to fail if debt deadline is missed
 
@@ -49,7 +50,7 @@ As mentioned/linked above, additional customization is supported.
 
 As shown in example file, pass a path to `extension_file_path` command pointing to a file defining DebtCeiling::Debt like the one in examples directory, and define its methods for your own additional calculation per file.
 
-Right now it lacks all tests...  feel free to open a PR!  
+Right now it lacks all tests...  feel free to open a PR!
 
 I'll try and add test coverage where it makes sense as API matures.
 
@@ -57,7 +58,7 @@ I'll try and add test coverage where it makes sense as API matures.
 
 todo_cost 500      #cost per comment matching /TODO/
 
-debt_per_reference_to deprecated_regex, 500 # help transition away from deprecated APIs 
+debt_per_reference_to deprecated_regex, 500 # help transition away from deprecated APIs
 
 points_per_regex_match REGEX, 500 # seems like an alias for above maybe, nix?
 
@@ -72,7 +73,7 @@ multipliers for important files
 
 visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
 
-include one of the JS complexity/debt analysis libraries below, or another if anyone had another suggestion: 
+include one of the JS complexity/debt analysis libraries below, or another if anyone had another suggestion:
 
 * https://github.com/es-analysis/plato
 

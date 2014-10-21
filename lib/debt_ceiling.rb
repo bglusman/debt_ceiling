@@ -42,6 +42,14 @@ module DebtCeiling
     @ceiling_amount = value
   end
 
+  def cost_per_todo(value)
+    @current_cost_per_todo = value.to_i
+  end
+
+  def debt_per_reference_to(string, value)
+    deprecated_reference_pairs[string] = value
+  end
+
   def debt_reduction_target_and_date(target_value, date_to_parse)
     @reduction_target = target_value
     @reduction_date   = Chronic.parse(date_to_parse)
@@ -50,7 +58,7 @@ module DebtCeiling
   def evaluate
     if ceiling_amount && ceiling_amount <= debt
       fail_test
-    elsif reduction_target && reduction_target <= debt && 
+    elsif reduction_target && reduction_target <= debt &&
           Time.now > reduction_date
       fail_test
     end
@@ -60,9 +68,12 @@ module DebtCeiling
     Kernel.exit 1
   end
 
-  attr_reader :blacklist, :whitelist, :ceiling_amount, :reduction_date, :reduction_target, :debt
+  attr_reader :blacklist, :whitelist, :ceiling_amount, :reduction_date, :reduction_target,
+              :debt, :current_cost_per_todo, :deprecated_reference_pairs
   @blacklist = []
   @whitelist = []
+  @current_cost_per_todo = 0
+  @deprecated_reference_pairs = {}
 
   GRADE_MAP = {a: 0, b: 10, c: 20, d: 40, f: 100} #arbitrary default grades for now
   GRADE_MAP.keys.each do |grade|
