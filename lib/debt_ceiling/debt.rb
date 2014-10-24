@@ -39,7 +39,18 @@ module DebtCeiling
     end
 
     def text_match_debt(string, cost)
-      source_code.scan(string).count * cost
+      (source_code.scan(string).count * cost) + manual_callout_debt
+    end
+
+    def manual_callout_debt
+      DebtCeiling.manual_callouts.reduce(0) do |memo, callout|
+        memo + source_code.each_line.reduce(0) do |accum, line|
+          match_data = line.match(Regexp.new(callout + '.*'))
+          string = match_data.to_s.split(callout).last
+          amount = string.match(/\d+/).to_s if string
+          accum + amount.to_i
+        end
+      end
     end
 
     def valid_debt?

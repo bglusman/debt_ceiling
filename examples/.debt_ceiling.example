@@ -17,6 +17,7 @@ cost_per_todo 50
 
 debt_per_reference_to 'DEPRECATED_API', 20
 
+explicit_comment_callouts "REFACTOR THIS", "HORRIBLE HACK"
 
 #only count debt scores for file paths matching these strings (converted to regexes)
 whitelist_matching %w(app lib)
