@@ -34,12 +34,13 @@ module DebtCeiling
 
     def debt_from_source_code_rules
       text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
+      manual_callout_debt +
       DebtCeiling.deprecated_reference_pairs.map {|string, value|
         text_match_debt(string, value.to_i) }.inject(&:+).to_i
     end
 
     def text_match_debt(string, cost)
-      (source_code.scan(string).count * cost) + manual_callout_debt
+      source_code.scan(string).count * cost
     end
 
     def manual_callout_debt
