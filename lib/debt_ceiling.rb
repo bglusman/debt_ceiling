@@ -70,6 +70,7 @@ module DebtCeiling
           Time.now > reduction_date
       fail_test
     end
+    debt
   end
 
   def fail_test

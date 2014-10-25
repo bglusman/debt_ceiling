@@ -14,4 +14,8 @@ describe DebtCeiling do
     expect { DebtCeiling.calculate('.') }.to raise_error
   end
 
+  it "returns quantity of total debt" do
+    expect(DebtCeiling.calculate('.')).to be > 5 #arbitrary non-zero amount
+  end
+
 end
