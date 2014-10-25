@@ -2,7 +2,7 @@
 
 #DebtCeiling
 
-Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via static analysis as part of your application's test suite.  Eventually perhaps will aid in visualizing tech debt as a graph or graphs (breakind down debt into various categories and sources).
+Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite.  Eventually perhaps will aid in visualizing this quantification as a graph or graphs, and breaking down debt into various categories and sources.  Currently it highlights the single largest source of debt as a suggestion for reduction, as well out outputting the total quantity, both in test suite interation or by manually running `debt_ceiling` binary.
 
 Current features include:
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line (add FULL_ANALYSIS=true for a lengthier analysis by RubyCritic including churn and more code smells, but same grading logic, made available for use by hooks)
