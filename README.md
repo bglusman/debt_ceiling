@@ -1,8 +1,6 @@
-[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling) [![debt_ceiling API Documentation](https://www.omniref.com/ruby/gems/debt_ceiling.png)](https://www.omniref.com/ruby/gems/debt_ceiling)
+[![Build Status](https://travis-ci.org/bglusman/debt_ceiling.svg?branch=master)](https://travis-ci.org/bglusman/debt_ceiling)[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling) [![debt_ceiling API Documentation](https://www.omniref.com/ruby/gems/debt_ceiling.png)](https://www.omniref.com/ruby/gems/debt_ceiling)
 
 #DebtCeiling
-
-### Work in progress, feedback and PR's appreciated
 
 Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via static analysis as part of your application's test suite.  Eventually perhaps will aid in visualizing tech debt as a graph or graphs (breakind down debt into various categories and sources).
 
@@ -64,6 +62,8 @@ default/custom points per reek smell detected (not currently part of rubycritic 
 every line over x ideal file size is y points of debt
 
 multipliers for important files
+
+command line options to configure options per run/without a .debt_ceiling file
 
 visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
 
