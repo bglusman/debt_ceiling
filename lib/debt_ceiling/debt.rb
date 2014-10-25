@@ -34,12 +34,24 @@ module DebtCeiling
 
     def debt_from_source_code_rules
       text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
+      manual_callout_debt +
       DebtCeiling.deprecated_reference_pairs.map {|string, value|
         text_match_debt(string, value.to_i) }.inject(&:+).to_i
     end
 
     def text_match_debt(string, cost)
       source_code.scan(string).count * cost
+    end
+
+    def manual_callout_debt
+      DebtCeiling.manual_callouts.reduce(0) do |memo, callout|
+        memo + source_code.each_line.reduce(0) do |accum, line|
+          match_data = line.match(Regexp.new(callout + '.*'))
+          string = match_data.to_s.split(callout).last
+          amount = string.match(/\d+/).to_s if string
+          accum + amount.to_i
+        end
+      end
     end
 
     def valid_debt?

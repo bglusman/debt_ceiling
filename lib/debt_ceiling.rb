@@ -55,6 +55,10 @@ module DebtCeiling
     @reduction_date   = Chronic.parse(date_to_parse)
   end
 
+  def explicit_comment_callouts(*strings)
+    @manual_callouts += strings
+  end
+
   def evaluate
     if ceiling_amount && ceiling_amount <= debt
       fail_test
@@ -69,11 +73,12 @@ module DebtCeiling
   end
 
   attr_reader :blacklist, :whitelist, :ceiling_amount, :reduction_date, :reduction_target,
-              :debt, :current_cost_per_todo, :deprecated_reference_pairs
+              :debt, :current_cost_per_todo, :deprecated_reference_pairs, :manual_callouts
   @blacklist = []
   @whitelist = []
   @current_cost_per_todo = 0
   @deprecated_reference_pairs = {}
+  @manual_callouts = ["TECH DEBT"]
 
   GRADE_MAP = {a: 0, b: 10, c: 20, d: 40, f: 100} #arbitrary default grades for now
   GRADE_MAP.keys.each do |grade|
