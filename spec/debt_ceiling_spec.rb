@@ -18,4 +18,19 @@ describe DebtCeiling do
     expect(DebtCeiling.calculate('.')).to be > 5 #arbitrary non-zero amount
   end
 
+  it "adds debt for todos with specified value" do
+    todo_amount = 50
+    DebtCeiling.cost_per_todo(todo_amount)
+    expect(DebtCeiling.calculate('spec/support/todo_example.rb')).to be todo_amount
+  end
+
+  it "allows manual debt with TECH DEBT comment" do
+    expect(DebtCeiling.calculate('spec/support/manual_example.rb')).to be 100 #hardcoded in example file
+  end
+
+  it "allows manual debt with arbitrarily defined comment" do
+    DebtCeiling.explicit_comment_callouts('REFACTOR')
+    expect(DebtCeiling.calculate('spec/support/manual_example.rb')).to be 150 #hardcoded in example file
+  end
+
 end
