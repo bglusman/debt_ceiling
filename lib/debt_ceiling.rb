@@ -55,6 +55,10 @@ module DebtCeiling
     @reduction_date   = Chronic.parse(date_to_parse)
   end
 
+  def clear_reduction_targets
+    @reduction_target, @reduction_date = nil, nil
+  end
+
   def explicit_comment_callouts(*strings)
     @manual_callouts += strings
   end
