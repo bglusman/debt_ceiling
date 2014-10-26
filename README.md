@@ -76,3 +76,8 @@ include one of the JS complexity/debt analysis libraries below, or another if an
 * https://github.com/dpnishant/jsprime
 
 * https://github.com/mozilla/doctorjs
+
+## License
+
+`debt_ceiling` is MIT licensed. [See the accompanying file](MIT-LICENSE.md) for
+the full text.
