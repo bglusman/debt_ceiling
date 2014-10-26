@@ -2,7 +2,8 @@ module DebtCeiling
   class Debt
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
-    attr_reader :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
+    attr_reader :file_attributes, :path, :analysed_module, :module_name,
+                :linecount, :source_code, :rating
     attr_accessor :debt_amount
     def initialize(file_attributes)
       @file_attributes  = file_attributes
@@ -11,20 +12,17 @@ module DebtCeiling
       @module_name      = file_attributes.name
       @linecount        = file_attributes.linecount
       @source_code      = file_attributes.source_code
+      @rating           = analysed_module.rating
       default_measure_debt if valid_debt?
     end
 
     def default_measure_debt
-      if self.respond_to?(:measure_debt)
-        cost = self.public_send(:measure_debt)
-      end
-      if !cost
-        cost = if self.respond_to?(:augment_debt)
-          self.public_send(:augment_debt) || 0
-        else
-          0
-        end
-        letter_grade = file_attributes.analysed_module.rating.to_s.downcase
+      cost = public_send(:measure_debt) if self.respond_to?(:measure_debt)
+
+      unless cost
+        cost = public_send(:augment_debt) if respond_to?(:augment_debt)
+        cost = cost.to_i
+        letter_grade = rating.to_s.downcase
         cost_per_line = DebtCeiling.public_send("#{letter_grade}_current_cost_per_line")
         cost += file_attributes.linecount * cost_per_line
         cost += debt_from_source_code_rules
@@ -35,8 +33,9 @@ module DebtCeiling
     def debt_from_source_code_rules
       text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
       manual_callout_debt +
-      DebtCeiling.deprecated_reference_pairs.map {|string, value|
-        text_match_debt(string, value.to_i) }.inject(&:+).to_i
+      DebtCeiling.deprecated_reference_pairs.map do|string, value|
+        text_match_debt(string, value.to_i)
+      end.reduce(&:+).to_i
     end
 
     def text_match_debt(string, cost)
@@ -57,18 +56,18 @@ module DebtCeiling
     def valid_debt?
       black_empty = DebtCeiling.blacklist.empty?
       white_empty = DebtCeiling.whitelist.empty?
-      raise DoNotWhitelistAndBlacklistSimulateneously if (!black_empty && !white_empty)
+      fail DoNotWhitelistAndBlacklistSimulateneously if !black_empty && !white_empty
       (black_empty && white_empty) ||
       (black_empty && self.class.whitelist_includes?(self)) ||
       (white_empty && !self.class.blacklist_includes?(self))
     end
 
     def self.whitelist_includes?(debt)
-      DebtCeiling.whitelist.detect {|filename| filename.match debt.path }
+      DebtCeiling.whitelist.find { |filename| filename.match debt.path }
     end
 
     def self.blacklist_includes?(debt)
-      DebtCeiling.blacklist.detect {|filename| filename.match debt.path }
+      DebtCeiling.blacklist.find { |filename| filename.match debt.path }
     end
 
     def name
@@ -80,8 +79,7 @@ module DebtCeiling
     end
 
     def +(other)
-      self.to_i + other.to_i
+      to_i + other.to_i
     end
-
   end
 end

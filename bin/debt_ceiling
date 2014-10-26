@@ -1,3 +1,3 @@
 #!/usr/bin/env ruby
-require_relative "../lib/debt_ceiling"
-DebtCeiling.calculate(ARGV[0] ? ARGV[0] : ".")
+require_relative '../lib/debt_ceiling'
+DebtCeiling.calculate(ARGV[0] ? ARGV[0] : '.')

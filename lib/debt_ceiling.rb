@@ -5,17 +5,17 @@ require 'chronic'
 module DebtCeiling
   extend self
 
-  def calculate(dir=".")
-    if File.exists?(Dir.pwd + '/.debt_ceiling')
-       File.open(Dir.pwd + "/.debt_ceiling") {|f| DebtCeiling.module_eval(f.read)}
-    elsif File.exists?(Dir.home + '/.debt_ceiling')
-       File.open(Dir.home + '/.debt_ceiling') {|f| DebtCeiling.module_eval(f.read)}
+  def calculate(dir = '.')
+    if File.exist?(Dir.pwd + '/.debt_ceiling')
+      File.open(Dir.pwd + '/.debt_ceiling') { |f| DebtCeiling.module_eval(f.read) }
+    elsif File.exist?(Dir.home + '/.debt_ceiling')
+      File.open(Dir.home + '/.debt_ceiling') { |f| DebtCeiling.module_eval(f.read) }
     else
       puts "No .debt_ceiling configuration file detected in #{Dir.pwd} or ~/, using defaults"
     end
 
     extension_path = DebtCeiling.current_extension_file_path
-    load extension_path if extension_path && File.exists?(extension_path)
+    load extension_path if extension_path && File.exist?(extension_path)
 
     @debt = DebtCeiling::Accounting.calculate(dir)
     evaluate
@@ -31,11 +31,11 @@ module DebtCeiling
   end
 
   def blacklist_matching(matchers)
-    @blacklist = matchers.map {|matcher| Regexp.new(matcher)}
+    @blacklist = matchers.map { |matcher| Regexp.new(matcher) }
   end
 
   def whitelist_matching(matchers)
-    @whitelist =  matchers.map {|matcher| Regexp.new(matcher)}
+    @whitelist =  matchers.map { |matcher| Regexp.new(matcher) }
   end
 
   def set_debt_ceiling(value)
@@ -83,15 +83,15 @@ module DebtCeiling
   @whitelist = []
   @current_cost_per_todo = 0
   @deprecated_reference_pairs = {}
-  @manual_callouts = ["TECH DEBT"]
+  @manual_callouts = ['TECH DEBT']
 
-  GRADE_MAP = {a: 0, b: 10, c: 20, d: 40, f: 100} #arbitrary default grades for now
+  GRADE_MAP = { a: 0, b: 10, c: 20, d: 40, f: 100 } # arbitrary default grades for now
   GRADE_MAP.keys.each do |grade|
     instance_variable_set "@#{grade}_cost_per_line", GRADE_MAP[grade]
     define_method("#{grade}_current_cost_per_line") do
       instance_variable_get "@#{grade}_cost_per_line"
     end
-    define_method("#{grade}_cost_per_line") do |value| #def set methods, no =
+    define_method("#{grade}_cost_per_line") do |value| # def set methods, no =
       instance_variable_set "@#{grade}_cost_per_line", value
     end
   end

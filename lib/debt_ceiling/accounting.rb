@@ -22,7 +22,7 @@ module DebtCeiling
           file_attributes.path = mod.path
           file_attributes.analysed_module = mod
           file_attributes.source_code = File.read(mod.path)
-          debt_rule = Debt.new(file_attributes)
+          Debt.new(file_attributes)
         end
       end
 
@@ -30,10 +30,10 @@ module DebtCeiling
         if ENV['FULL_ANALYSIS']
           Rubycritic::Orchestrator.new.critique([path])
         else
-        #temporarily use Rubycritic internals until they provide an API
-          require "rubycritic/modules_initializer"
-          require "rubycritic/analysers/complexity"
-          require "rubycritic/analysers/smells/flay"
+          # temporarily use Rubycritic internals until they provide an API
+          require 'rubycritic/modules_initializer'
+          require 'rubycritic/analysers/complexity'
+          require 'rubycritic/analysers/smells/flay'
 
           modules = Rubycritic::ModulesInitializer.init([path])
           [Rubycritic::Analyser::Complexity, Rubycritic::Analyser::FlaySmells].each do |analyser|

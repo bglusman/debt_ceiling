@@ -1,3 +1,3 @@
 class Whatever
-  #TODO add some points for this line
+  # TODO add some points for this line
 end
