@@ -54,7 +54,7 @@ module DebtCeiling
     def valid_debt?
       black_empty = DebtCeiling.blacklist.empty?
       white_empty = DebtCeiling.whitelist.empty?
-      fail DoNotWhitelistAndBlacklistSimulateneously if !black_empty && !white_empty
+      fail DoNotWhitelistAndBlacklistSimulateneously unless black_empty || white_empty
       (black_empty && white_empty) ||
       (black_empty && self.class.whitelist_includes?(self)) ||
       (white_empty && !self.class.blacklist_includes?(self))
