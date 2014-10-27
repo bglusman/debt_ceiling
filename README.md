@@ -26,7 +26,7 @@ These features are largely are demonstrated/discussed in [examples/.debt_ceiling
 
 Additional customization is supported via two method hooks in the debt class, which debt_ceiling will load from a provided extension_file_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
 
-You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling file in the project's home directory
+You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling file in the project's home directory (This may change in a coming revision to `DebtCeiling.configure do |config|` syntax and/or YAML configuration, TBD).
 
 ```
 set_debt_ceiling 500
@@ -58,27 +58,21 @@ Right now it lacks all tests...  feel free to open a PR!
 
 I'll try and add test coverage where it makes sense as API matures.
 
-### Improvement ideas:
+### Improvement ideas/suggestsions for contributing:
 
-rubocop/cane integration debt for style violations
+* rubocop/cane integration debt for style violations
 
-default/custom points per reek smell detected (not currently part of rubycritic grading, despite integration)
+* default/custom points per reek smell detected (not currently part of rubycritic grading, despite integration)
 
-every line over x ideal file size is y points of debt
+* every line over x ideal file size is y points of debt
 
-multipliers for important files
+* multipliers for important files
 
-command line options to configure options per run/without a .debt_ceiling file
+* command line options to configure options per run/without a .debt_ceiling file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
 
-visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
+* visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
 
-include one of the JS complexity/debt analysis libraries below, or another if anyone had another suggestion:
-
-* https://github.com/es-analysis/plato
-
-* https://github.com/dpnishant/jsprime
-
-* https://github.com/mozilla/doctorjs
+* optionally include/integrate with one of these JS analysis libraries, or another if anyone had another suggestion: [plato](https://github.com/es-analysis/plato) [jsprime](https://github.com/dpnishant/jsprime) [doctorjs](https://github.com/mozilla/doctorjs)
 
 ## License
 
