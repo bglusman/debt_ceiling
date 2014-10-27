@@ -17,8 +17,8 @@ Current features include:
 * Reporting the single greatest source of debt based on your definitions
 * Reporting total debt for the git repo based on your definitions
 * Adding cost for TODOs or deprecated references you specify (see .debt_ceiling.example)
-* Running the binary from a test suite to fail if debt ceiling is exceeded
-* Running the binary from a test suite to fail if debt deadline is missed
+* Running from a test suite to fail if debt ceiling is exceeded
+* Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
 To integrate in a test suite, use `set_debt_ceiling` and/or `debt_reduction_target_and_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
 
