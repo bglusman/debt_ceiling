@@ -1,18 +1,17 @@
+require 'forwardable'
 module DebtCeiling
   class Debt
+    extend Forwardable
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
-    attr_reader :file_attributes, :path, :analysed_module, :module_name,
-                :linecount, :source_code, :rating
+    attr_reader :file_attributes
+    def_delegators :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
+    def_delegator :analysed_module, :rating
     attr_accessor :debt_amount
+    def_delegator :debt_amount, :to_i
+
     def initialize(file_attributes)
       @file_attributes  = file_attributes
-      @path             = file_attributes.path
-      @analysed_module  = file_attributes.analysed_module
-      @module_name      = file_attributes.name
-      @linecount        = file_attributes.linecount
-      @source_code      = file_attributes.source_code
-      @rating           = analysed_module.rating
       default_measure_debt if valid_debt?
     end
 
@@ -31,11 +30,10 @@ module DebtCeiling
     end
 
     def debt_from_source_code_rules
-      text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
       manual_callout_debt +
-      DebtCeiling.deprecated_reference_pairs.map do|string, value|
-        text_match_debt(string, value.to_i)
-      end.reduce(&:+).to_i
+      text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
+      DebtCeiling.deprecated_reference_pairs
+        .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
     end
 
     def text_match_debt(string, cost)
@@ -72,10 +70,6 @@ module DebtCeiling
 
     def name
       file_attributes.analysed_module.name || path.to_s.split('/').last
-    end
-
-    def to_i
-      debt_amount.to_i
     end
 
     def +(other)
