@@ -20,43 +20,41 @@ Current features include:
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
-To integrate in a test suite, use `set_debt_ceiling` and/or `debt_reduction_target_and_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
+To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
 
-These features are largely are demonstrated/discussed in [examples/.debt_ceiling](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.example) which demonstrates configuring debt ceiling
+These features are largely are demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) which demonstrates configuring debt ceiling
 
 Additional customization is supported via two method hooks in the debt class, which debt_ceiling will load from a provided extension_file_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
 
-You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling file in the project's home directory (This may change in a coming revision to `DebtCeiling.configure do |config|` syntax and/or YAML configuration, TBD).
+You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling.rb file in the project's home directory:
 
 ```
-set_debt_ceiling 500
-#exceeding this will fail a test, if you run debt_ceiling binary from test suite
-debt_reduction_target_and_date 100, 'Jan 1 2015'
-#exceeding this will fail after the target date (parsed by Chronic)
-
-#set the multipliers per line of code in a file with each letter grade
-b_cost_per_line 10
-c_cost_per_line 20
-d_cost_per_line 40
-f_cost_per_line 100
-
-#load custom debt calculations (see examples/debt.rb) from this path
-extension_file_path "./debt.rb"
-
-#only count debt scores for files matching these strings (converted to regexes)
-whitelist_matching %w(app lib)
-
-#or.... exclude debt scores for files matching these strings (obviously mutually exclusive, raises error if both present)
-#blacklist_matching %w(schema.rb routes.rb)
+DebtCeiling.configure do |c|
+  #exceeding this will fail a test, if you run debt_ceiling binary/calculate method from test suite
+  c.debt_ceiling = 500
+  #exceeding this target will fail after the reduction date (parsed by Chronic)
+  c.reduction_target = 100
+  c.reduction_date   = 'Jan 1 2015'
+  #set the multipliers per line of code in a file with each letter grade, these are the current defaults
+  c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+  #load custom debt calculations (see examples/debt.rb) from this path
+  c.extension_path = "./debt.rb"
+  #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
+  c.cost_per_todo  = 50
+  c.deprecated_reference_pairs = { 'DEPRECATED_API' => 20}
+  #manually assign debt to code sections with these or with default "TECH DEBT", as a comment like #TECH DEBT +50
+  c.manual_callouts += ["REFACTOR THIS", "HORRIBLE HACK"]
+  #only count debt scores for files/folders matching these strings (converted to regexes)
+  c.whitelist = %w(app lib)
+  #or
+  #exclude debt scores for files/folders matching these strings (commented as mutually exclusive)
+  #c.blacklist = %w(config version debt_ceiling.rb)
+end
 ```
 
 As mentioned/linked above, additional customization is supported.
 
-As shown in example file, pass a path to `extension_file_path` command pointing to a file defining DebtCeiling::Debt like the one in examples directory, and define its methods for your own additional calculation per file.
-
-Right now it lacks all tests...  feel free to open a PR!
-
-I'll try and add test coverage where it makes sense as API matures.
+As shown in example file, set a path for `extension_path` pointing to a file defining DebtCeiling::Debt like the one in examples directory, and define its methods for your own additional calculation per file.
 
 ### Improvement ideas/suggestsions for contributing:
 

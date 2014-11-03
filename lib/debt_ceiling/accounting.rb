@@ -17,11 +17,12 @@ module DebtCeiling
 
       def construct_debts(modules)
         modules.map do |mod|
+          path            = mod.path
           file_attributes = OpenStruct.new
-          file_attributes.linecount = `wc -l #{mod.path}`.match(/\d+/)[0].to_i
-          file_attributes.path = mod.path
+          file_attributes.linecount = `wc -l #{path}`.match(/\d+/)[0].to_i
+          file_attributes.path = path
           file_attributes.analysed_module = mod
-          file_attributes.source_code = File.read(mod.path)
+          file_attributes.source_code = File.read(path)
           Debt.new(file_attributes)
         end
       end

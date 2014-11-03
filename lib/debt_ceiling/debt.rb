@@ -22,7 +22,7 @@ module DebtCeiling
         cost = public_send(:augment_debt) if respond_to?(:augment_debt)
         cost = cost.to_i
         letter_grade = rating.to_s.downcase
-        cost_per_line = DebtCeiling.public_send("#{letter_grade}_current_cost_per_line")
+        cost_per_line = DebtCeiling.configuration.grade_points[letter_grade.to_sym]
         cost += file_attributes.linecount * cost_per_line
         cost += debt_from_source_code_rules
       end
@@ -31,23 +31,27 @@ module DebtCeiling
 
     def debt_from_source_code_rules
       manual_callout_debt +
-      text_match_debt('TODO', DebtCeiling.current_cost_per_todo) +
+      text_match_debt('TODO', DebtCeiling.cost_per_todo) +
       DebtCeiling.deprecated_reference_pairs
         .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
     end
 
     def text_match_debt(string, cost)
-      source_code.scan(string).count * cost
+      source_code.scan(string).count * cost.to_i
     end
 
     def manual_callout_debt
-      DebtCeiling.manual_callouts.reduce(0) do |memo, callout|
-        memo + source_code.each_line.reduce(0) do |accum, line|
-          match_data = line.match(Regexp.new(callout + '.*'))
-          string = match_data.to_s.split(callout).last
-          amount = string.match(/\d+/).to_s if string
-          accum + amount.to_i
-        end
+      DebtCeiling.manual_callouts.reduce(0) do |sum, callout|
+        sum + debt_from_callout(callout)
+      end
+    end
+
+    def debt_from_callout(callout)
+      source_code.each_line.reduce(0) do |sum, line|
+        match_data = line.match(Regexp.new(callout + '.*'))
+        string = match_data.to_s.split(callout).last
+        amount = string.match(/\d+/).to_s if string
+        sum + amount.to_i
       end
     end
 

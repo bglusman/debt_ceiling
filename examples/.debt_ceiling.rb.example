@@ -1,0 +1,27 @@
+DebtCeiling.configure do |c|
+  #exceeding this will fail a test, if you run debt_ceiling binary/calculate method from test suite
+  c.debt_ceiling = 500
+  #exceeding this target will fail after the reduction date (parsed by Chronic)
+  c.reduction_target = 100
+  c.reduction_date   = 'Jan 1 2015'
+  #set the multipliers per line of code in a file with each letter grade, these are the current defaults
+  c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+  #load custom debt calculations (see examples/debt.rb) from this path
+  c.extension_path = "./debt.rb"
+  #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
+  c.cost_per_todo  = 50
+  c.deprecated_reference_pairs = { 'DEPRECATED_API' => 20}
+  #manually assign debt to code sections with these or with default "TECH DEBT", as a comment like #TECH DEBT +50
+  c.manual_callouts += ["REFACTOR THIS", "HORRIBLE HACK"]
+  #only count debt scores for files/folders matching these strings (converted to regexes)
+  c.whitelist = %w(app lib)
+  #or
+  #exclude debt scores for files/folders matching these strings (commented as mutually exclusive)
+  #c.blacklist = %w(config version debt_ceiling.rb)
+end
+
+
+
+
+
+
