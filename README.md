@@ -16,7 +16,7 @@ Current features include:
 * Modifying or replacing default calculation on a per file basis
 * Reporting the single greatest source of debt based on your definitions
 * Reporting total debt for the git repo based on your definitions
-* Adding cost for TODOs or deprecated references you specify (see .debt_ceiling.example)
+* Adding cost for TODOs or deprecated references you specify (see [.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example))
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
@@ -66,11 +66,11 @@ As shown in example file, set a path for `extension_path` pointing to a file def
 
 * multipliers for important files
 
-* command line options to configure options per run/without a .debt_ceiling file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
+* command line options to configure options per run/without a `.debt_ceiling.rb` file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
 
 * visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
 
-* optionally include/integrate with one of these JS analysis libraries, or another if anyone had another suggestion: [plato](https://github.com/es-analysis/plato) [jsprime](https://github.com/dpnishant/jsprime) [doctorjs](https://github.com/mozilla/doctorjs)
+* optionally include/integrate with one of these JS analysis libraries, or another if anyone had another suggestion: [plato](https://github.com/es-analysis/plato) [jsprime](https://github.com/dpnishant/jsprime) [doctorjs](https://github.com/mozilla/doctorjs)  Could also create a plugin architecture and do JS that way, and allow any other language to add plugin handling so it could be a multi-language standard tool.
 
 ## License
 
