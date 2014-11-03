@@ -41,13 +41,17 @@ module DebtCeiling
     end
 
     def manual_callout_debt
-      DebtCeiling.manual_callouts.reduce(0) do |memo, callout|
-        memo + source_code.each_line.reduce(0) do |accum, line|
-          match_data = line.match(Regexp.new(callout + '.*'))
-          string = match_data.to_s.split(callout).last
-          amount = string.match(/\d+/).to_s if string
-          accum + amount.to_i
-        end
+      DebtCeiling.manual_callouts.reduce(0) do |sum, callout|
+        sum + debt_from_callout(callout)
+      end
+    end
+
+    def debt_from_callout(callout)
+      source_code.each_line.reduce(0) do |sum, line|
+        match_data = line.match(Regexp.new(callout + '.*'))
+        string = match_data.to_s.split(callout).last
+        amount = string.match(/\d+/).to_s if string
+        sum + amount.to_i
       end
     end
 
