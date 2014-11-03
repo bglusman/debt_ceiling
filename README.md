@@ -11,7 +11,7 @@ Travis tests are running on 1.9.3, 2.1.1 and JRuby 1.9 mode.
 
 Current features include:
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line (add FULL_ANALYSIS=true for a lengthier analysis by RubyCritic including churn and more code smells, but same grading logic, made available for use by hooks)
-* Comment added explicit/manual debt assignment, via #TECH DEBT +100 or custom phrases
+* Comment added explicit/manual debt assignment, via `#TECH DEBT +100` or custom word/phrase
 * Whitelisting/blacklisting files by matching path/filename
 * Modifying or replacing default calculation on a per file basis
 * Reporting the single greatest source of debt based on your definitions
