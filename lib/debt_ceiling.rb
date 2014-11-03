@@ -24,13 +24,9 @@ module DebtCeiling
     c.extension_path = "#{Dir.pwd}/debt.rb"
     c.blacklist = []
     c.whitelist = []
-    c.cost_per_todo = 0
     c.deprecated_reference_pairs = {}
     c.manual_callouts = ['TECH DEBT']
     c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
-    c.reduction_target = nil
-    c.reduction_date   = nil
-    c.debt_ceiling     = nil
   end
 
   def load_configuration

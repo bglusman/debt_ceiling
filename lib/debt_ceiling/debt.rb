@@ -37,7 +37,7 @@ module DebtCeiling
     end
 
     def text_match_debt(string, cost)
-      source_code.scan(string).count * cost
+      source_code.scan(string).count * cost.to_i
     end
 
     def manual_callout_debt
