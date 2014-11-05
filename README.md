@@ -66,6 +66,8 @@ As shown in example file, set a path for `extension_path` pointing to a file def
 
 * multipliers for important files
 
+* `debt_ceiling_per_file` option to cap max debt for any one analyzed module
+
 * command line options to configure options per run/without a `.debt_ceiling.rb` file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
 
 * visualization/history of debt would be nice, but unclear how to best support...  one possibility is running it against each commit in a repo, and using git-notes to add score data (and some metadata perhaps?) to store it for comparing/graphing, and for comparing branches etc. optionally configured could do this for every commit that doesn't already have a note attached, or for which the note's metadata/version is out of sync with current definitions.
