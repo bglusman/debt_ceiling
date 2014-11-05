@@ -22,9 +22,9 @@ Current features include:
 
 To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
 
-These features are largely are demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) which demonstrates configuring debt ceiling
+These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
-Additional customization is supported via two method hooks in the debt class, which debt_ceiling will load from a provided extension_file_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
+Additional customization is supported via two method hooks in the debt class, which DebtCeiling will load from a provided extension_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
 
 You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling.rb file in the project's home directory:
 
@@ -48,19 +48,19 @@ DebtCeiling.configure do |c|
   c.whitelist = %w(app lib)
   #or
   #exclude debt scores for files/folders matching these strings (commented as mutually exclusive)
-  #c.blacklist = %w(config version debt_ceiling.rb)
+  #c.blacklist = %w(config schema routes)
 end
 ```
 
-As mentioned/linked above, additional customization is supported.
+As mentioned/linked above, additional customization is supported via a debt.rb file which may define one or both of two methods DebtCeiling will call if defined when calculating debt for each module scanned (if it passes the whitelist/blacklist stage of filtering).
 
-As shown in example file, set a path for `extension_path` pointing to a file defining DebtCeiling::Debt like the one in examples directory, and define its methods for your own additional calculation per file.
+As shown in example file, set a path for `extension_path` pointing to a file defining `DebtCeiling::Debt` like the one in examples directory, and define its methods for your own additional calculation per file.
 
 ### Improvement ideas/suggestsions for contributing:
 
 * rubocop/cane integration debt for style violations
 
-* default/custom points per reek smell detected (not currently part of rubycritic grading, despite integration)
+* default/custom points per reek smell detected (not currently part of RubyCritic grading, but available in full analysis)
 
 * every line over x ideal file size is y points of debt
 
