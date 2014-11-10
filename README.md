@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/debt_ceiling.svg)](http://badge.fury.io/rb/debt_ceiling)
 [![Build Status](https://travis-ci.org/bglusman/debt_ceiling.svg?branch=master)](https://travis-ci.org/bglusman/debt_ceiling)
 [![Coverage
-Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling)
+Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling?branch=master)
 [![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling)
 [![debt_ceiling API Documentation](https://www.omniref.com/ruby/gems/debt_ceiling.png)](https://www.omniref.com/ruby/gems/debt_ceiling)
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
