@@ -65,11 +65,11 @@ module DebtCeiling
     end
 
     def self.whitelist_includes?(debt)
-      DebtCeiling.whitelist.find { |filename| filename.match debt.path }
+      DebtCeiling.whitelist.find { |filename| debt.path.match filename }
     end
 
     def self.blacklist_includes?(debt)
-      DebtCeiling.blacklist.find { |filename| filename.match debt.path }
+      DebtCeiling.blacklist.find { |filename| debt.path.match filename }
     end
 
     def name

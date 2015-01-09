@@ -66,7 +66,7 @@ module DebtCeiling
     if debt_ceiling && debt_ceiling <= debt
       fail_test
     elsif reduction_target && reduction_target <= debt &&
-          Time.now > reduction_date
+          Time.now > Chronic.parse(reduction_date)
       fail_test
     end
     debt
