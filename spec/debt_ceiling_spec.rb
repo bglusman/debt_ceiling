@@ -11,7 +11,7 @@ describe DebtCeiling do
   it 'has failing exit status when target debt reduction is missed' do
     DebtCeiling.configure {|c| c.reduction_target =0; c.reduction_date =  Time.now.to_s }
     expect(DebtCeiling.debt_ceiling).to eq(nil)
-    expect { DebtCeiling.calculate('.', preconfigured: true) }.to raise_error
+    expect { DebtCeiling.calculate('.', preconfigured: true) }.to raise_error(SystemExit)
   end
 
   it 'returns quantity of total debt' do
