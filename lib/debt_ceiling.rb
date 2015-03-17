@@ -15,13 +15,13 @@ module DebtCeiling
                  :grade_points, :reduction_date, :reduction_target, :debt_ceiling,
                  :max_debt_per_module
 
-  configuration_defaults do |c|
-    c.extension_path = "#{Dir.pwd}/debt.rb"
-    c.blacklist = []
-    c.whitelist = []
-    c.deprecated_reference_pairs = {}
-    c.manual_callouts = ['TECH DEBT']
-    c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+  configuration_defaults do |config|
+    config.extension_path = "#{Dir.pwd}/debt.rb"
+    config.blacklist = []
+    config.whitelist = []
+    config.deprecated_reference_pairs = {}
+    config.manual_callouts = ['TECH DEBT']
+    config.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
   end
 
 
@@ -36,12 +36,13 @@ module DebtCeiling
   private
 
   def load_configuration
-    if File.exist?(Dir.pwd + '/.debt_ceiling.rb')
-      load(Dir.pwd + '/.debt_ceiling.rb')
+    pwd = Dir.pwd
+    if File.exist?(pwd + '/.debt_ceiling.rb')
+      load(pwd + '/.debt_ceiling.rb')
     elsif File.exist?(Dir.home + '/.debt_ceiling.rb')
       load(Dir.home + '/.debt_ceiling.rb')
     else
-      puts "No .debt_ceiling.rb configuration file detected in #{Dir.pwd} or ~/, using defaults"
+      puts "No .debt_ceiling.rb configuration file detected in #{pwd} or ~/, using defaults"
     end
 
     load extension_path if extension_path && File.exist?(extension_path)
