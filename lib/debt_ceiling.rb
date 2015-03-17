@@ -21,7 +21,7 @@ module DebtCeiling
     config.whitelist = []
     config.deprecated_reference_pairs = {}
     config.manual_callouts = ['TECH DEBT']
-    config.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+    config.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
   end
 
 
