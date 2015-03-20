@@ -8,7 +8,7 @@ module DebtCeiling
   extend Forwardable
   extend self
 
-  attr_reader :debt
+  attr_reader :total_debt
   def_delegator :configuration, :extension_path
   def_delegator :configuration, :blacklist
   def_delegator :configuration, :whitelist
@@ -44,7 +44,7 @@ module DebtCeiling
 
   def calculate(dir = '.', opts={preconfigured: false})
     load_configuration unless @loaded || opts[:preconfigured]
-    @debt = DebtCeiling::Accounting.calculate(dir)
+    @total_debt = DebtCeiling::Accounting.calculate(dir).total_debt
     evaluate
   end
 
@@ -63,13 +63,13 @@ module DebtCeiling
 
 
   def evaluate
-    if debt_ceiling && debt_ceiling <= debt
+    if debt_ceiling && debt_ceiling <= total_debt
       fail_test
-    elsif reduction_target && reduction_target <= debt &&
+    elsif reduction_target && reduction_target <= total_debt &&
           Time.now > Chronic.parse(reduction_date)
       fail_test
     end
-    debt
+    total_debt
   end
 
   def fail_test
