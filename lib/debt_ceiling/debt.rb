@@ -4,16 +4,27 @@ module DebtCeiling
     extend Forwardable
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
-    attr_reader :file_attributes
     def_delegators :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
-    def_delegator :analysed_module, :rating
-    attr_accessor :debt_amount
-    def_delegator :debt_amount, :to_i
+    def_delegator  :analysed_module, :rating
+    attr_accessor  :debt_amount
+    def_delegator  :debt_amount, :to_i
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
       default_measure_debt if valid_debt?
     end
+
+    def name
+      file_attributes.analysed_module.name || path.to_s.split('/').last
+    end
+
+    def +(other)
+      to_i + other.to_i
+    end
+
+    private
+
+    attr_reader :file_attributes
 
     def default_measure_debt
       cost = public_send(:measure_debt) if self.respond_to?(:measure_debt)
@@ -70,14 +81,6 @@ module DebtCeiling
 
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
-    end
-
-    def name
-      file_attributes.analysed_module.name || path.to_s.split('/').last
-    end
-
-    def +(other)
-      to_i + other.to_i
     end
   end
 end

@@ -6,13 +6,14 @@ module DebtCeiling
     TargetDeadlineMissed = Class.new(StandardError)
     class << self
       def calculate(path)
-        analysed_modules = construct_rubycritic_modules(path)
-        debts            = construct_debts(analysed_modules)
-        max_debt         = debts.max_by(&:to_i)
-        total_debt       = debts.map(&:to_i).reduce(:+)
-        puts "Current total tech debt: #{total_debt}"
-        puts "Largest source of debt is: #{max_debt.name} at #{max_debt.to_i}"
-        total_debt
+        analysed_modules  = construct_rubycritic_modules(path)
+        result            = OpenStruct.new
+        result.debts      = construct_debts(analysed_modules)
+        result.max_debt   = result.debts.max_by(&:to_i)
+        result.total_debt = result.debts.map(&:to_i).reduce(:+)
+        puts "Current total tech debt: #{result.total_debt}"
+        puts "Largest source of debt is: #{result.max_debt.name} at #{result.max_debt.to_i}"
+        result
       end
 
       def construct_debts(modules)

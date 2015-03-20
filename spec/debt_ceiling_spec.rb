@@ -14,6 +14,12 @@ describe DebtCeiling do
     expect { DebtCeiling.calculate('.', preconfigured: true) }.to raise_error(SystemExit)
   end
 
+  it 'has failing exit status when max debt per modile is exceeded' do
+    DebtCeiling.configure {|c| c.debt_ceiling_per_module =5 }
+    expect(DebtCeiling.debt_ceiling).to eq(nil)
+    expect { DebtCeiling.calculate('.', preconfigured: true) }.to raise_error(SystemExit)
+  end
+
   it 'returns quantity of total debt' do
     expect(DebtCeiling.calculate('.')).to be > 5 # arbitrary non-zero amount
   end
