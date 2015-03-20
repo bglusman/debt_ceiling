@@ -76,7 +76,7 @@ module DebtCeiling
   end
 
   def max_debt_per_module_exceeded?
-    max_debt_per_module && max_debt_per_module <= accounting_result.max_debt_per_module
+    max_debt_per_module && max_debt_per_module <= accounting_result.max_debt.to_i
   end
 
   def fail_test
