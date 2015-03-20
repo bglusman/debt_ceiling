@@ -5,9 +5,9 @@ module DebtCeiling
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
-    def_delegator  :analysed_module, :rating
-    attr_accessor  :debt_amount
-    def_delegator  :debt_amount, :to_i
+    def_delegator :analysed_module, :rating
+    attr_accessor :debt_amount
+    def_delegator :debt_amount, :to_i
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
@@ -45,7 +45,8 @@ module DebtCeiling
     end
 
     def cost_from_linecount_and_grade
-      file_attributes.linecount * cost_per_line
+      DebtCeiling.grade_points[letter_grade] +
+      file_attributes.linecount * DebtCeiling.per_line_grade_multipliers[letter_grade]
     end
 
     def debt_from_source_code_rules
@@ -93,10 +94,6 @@ module DebtCeiling
 
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
-    end
-
-    def cost_per_line
-      DebtCeiling.grade_points[letter_grade]
     end
 
     def letter_grade

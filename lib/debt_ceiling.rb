@@ -13,7 +13,7 @@ module DebtCeiling
   def_delegators :configuration, :extension_path, :blacklist, :whitelist,
                  :cost_per_todo, :deprecated_reference_pairs, :manual_callouts,
                  :grade_points, :reduction_date, :reduction_target, :debt_ceiling,
-                 :max_debt_per_module
+                 :max_debt_per_module, :per_line_grade_multipliers
 
   configuration_defaults do |config|
     config.extension_path = "#{Dir.pwd}/debt.rb"
@@ -22,6 +22,7 @@ module DebtCeiling
     config.deprecated_reference_pairs = {}
     config.manual_callouts = ['TECH DEBT']
     config.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
+    config.per_line_grade_multipliers = {a: 0, b: 0, c: 3, d: 21, f: 55}
   end
 
 

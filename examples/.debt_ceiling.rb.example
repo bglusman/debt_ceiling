@@ -4,8 +4,10 @@ DebtCeiling.configure do |c|
   #exceeding this target will fail after the reduction date (parsed by Chronic)
   c.reduction_target = 100
   c.reduction_date   = 'Jan 1 2015'
-  #set the multipliers per line of code in a file with each letter grade, these are the current defaults
+  #set the base cost per file for each letter grade, these are the current defaults
   c.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
+  #default multiplier for line length, a and b incur no penalty for long files by default
+  c.per_line_grade_multipliers = {a: 0, b: 0, c: 3, d: 21, f: 55}
   #load custom debt calculations (see examples/debt.rb) from this path
   c.extension_path = "./debt.rb"
   #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
