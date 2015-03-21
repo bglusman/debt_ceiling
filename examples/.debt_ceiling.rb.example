@@ -20,6 +20,8 @@ DebtCeiling.configure do |c|
   c.non_grade_scoring.method_count_multiplier = 0.5
   c.non_grade_scoring.smells_multiplier = 3
   c.non_grade_scoring.duplication_multiplier = 1.5
+  c.non_grade_scoring.ideal_max_line_count   = 100
+  c.non_grade_scoring.cost_per_line_over_ideal = 1
   #load custom debt calculations (see examples/debt.rb) from this path
   c.extension_path = "./debt.rb"
   #below two both use same mechanic, cost_per_todo just assumes capital

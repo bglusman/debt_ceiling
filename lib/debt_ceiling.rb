@@ -28,7 +28,9 @@ module DebtCeiling
     config.non_grade_scoring.method_count_multiplier = 0.5
     config.non_grade_scoring.smells_multiplier = 3
     config.non_grade_scoring.duplication_multiplier = 1.5
-    #logic being smells are pretty valid/fixable, complexity and method count
+    config.non_grade_scoring.ideal_max_line_count   = 100
+    config.non_grade_scoring.cost_per_line_over_ideal = 1
+    #smells are pretty valid/fixable, complexity and method count
     #may be inherent/way to improve smells
   end
 
