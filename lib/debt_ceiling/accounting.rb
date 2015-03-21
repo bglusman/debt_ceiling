@@ -38,7 +38,8 @@ module DebtCeiling
           The rubycritic grade for that debt is: #{max_debt.letter_grade}
           The flog complexity for that debt is: #{max_debt.analysed_module.complexity}
           Flay suspects #{max_debt.analysed_module.duplication.to_i} areas of code duplication
-          There are #{method_count} methods and #{smell_count} smell(s) from reek
+          There are #{method_count} methods and #{smell_count} smell(s) from reek.
+          The file is #{max_debt.linecount} lines long.
         RESULTS
       end
 
