@@ -1,9 +1,13 @@
 require 'configurations'
 require 'chronic'
+require 'rubycritic'
+require 'rubycritic/cli/application'
+require 'ostruct'
 require_relative 'debt_ceiling/accounting'
+require_relative 'debt_ceiling/custom_debt_analysis'
 require_relative 'debt_ceiling/debt'
 require_relative 'debt_ceiling/compatibility'
-
+require_relative 'debt_ceiling/file_attributes'
 
 module DebtCeiling
   include Configurations
@@ -15,8 +19,9 @@ module DebtCeiling
   def_delegators :configuration, :extension_path, :blacklist, :whitelist,
                  :cost_per_todo, :deprecated_reference_pairs, :manual_callouts,
                  :grade_points, :reduction_date, :reduction_target, :debt_ceiling,
-                 :max_debt_per_module, :non_grade_scoring
-
+                 :max_debt_per_module, :non_grade_scoring, :complexity_multiplier ,
+                 :method_count_multiplier, :smells_multiplier, :duplication_multiplier,
+                 :ideal_max_line_count, :cost_per_line_over_ideal
   configuration_defaults do |config|
     config.extension_path = "#{Dir.pwd}/debt.rb"
     config.blacklist = []
@@ -24,23 +29,33 @@ module DebtCeiling
     config.deprecated_reference_pairs = {}
     config.manual_callouts = ['TECH DEBT']
     config.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
-    config.non_grade_scoring.complexity_multiplier = 0.5
-    config.non_grade_scoring.method_count_multiplier = 0.5
-    config.non_grade_scoring.smells_multiplier = 3
-    config.non_grade_scoring.duplication_multiplier = 1.5
-    config.non_grade_scoring.ideal_max_line_count   = 100
-    config.non_grade_scoring.cost_per_line_over_ideal = 1
+    config.complexity_multiplier    = 0.5
+    config.method_count_multiplier  = 0.5
+    config.smells_multiplier        = 3
+    config.duplication_multiplier   = 1.5
+    config.ideal_max_line_count     = 100
+    config.cost_per_line_over_ideal = 1
     #smells are pretty valid/fixable, complexity and method count
     #may be inherent/way to improve smells
   end
 
 
   def calculate(dir = '.', opts={preconfigured: false})
-    load_configuration unless @loaded || opts[:preconfigured]
-    @accounting_result = DebtCeiling::Accounting.calculate(dir)
-    @total_debt = accounting_result.total_debt
+    @total_debt = accounting_result(dir, opts).total_debt
     fail_test if failed_condition?
     total_debt
+  end
+
+  def accounting_result(dir = '.', opts={preconfigured: false})
+    @accounting_result ||= begin
+      load_configuration unless @loaded || opts[:preconfigured]
+      Accounting.calculate(dir)
+    end
+  end
+
+  def clear
+    @accounting_result = nil
+    Accounting.clear
   end
 
   private

@@ -1,6 +1,3 @@
-require 'rubycritic'
-require 'rubycritic/cli/application'
-require 'ostruct'
 module DebtCeiling
   class Accounting
     DebtCeilingExceeded  = Class.new(StandardError)
@@ -17,48 +14,44 @@ module DebtCeiling
         @result ||= construct_result
       end
 
+      def clear
+        @result = nil
+      end
+
       def construct_result
         analysed_modules   = construct_rubycritic_modules(path)
         result_from_analysed_modules(analysed_modules)
       end
 
       def result_from_analysed_modules(analysed_modules)
-        _result            = OpenStruct.new
-        _result.debts      = construct_debts(analysed_modules)
-        _result.max_debt   = _result.debts.max_by(&:to_i)
-        _result.total_debt = _result.debts.map(&:to_i).reduce(:+)
-        _result
+        analysis            = OpenStruct.new
+        analysis.debts      = analysed_modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
+        analysis.max_debt   = analysis.debts.max_by(&:to_i)
+        analysis.total_debt = analysis.debts.map(&:to_i).reduce(:+)
+        analysis
       end
 
       def print_results
         puts <<-RESULTS
           Current total tech debt: #{result.total_debt}
-          Largest source of debt is: #{result.max_debt.name} at #{result.max_debt.to_i}
-          The rubycritic grade for that debt is: #{result.max_debt.letter_grade}
-          The flog complexity for that debt is: #{result.max_debt.analysed_module.complexity}
-          Flay suspects #{result.max_debt.analysed_module.duplication.to_i} areas of code duplication
+          Largest source of debt is: #{max_debt.name} at #{max_debt.to_i}
+          The rubycritic grade for that debt is: #{max_debt.letter_grade}
+          The flog complexity for that debt is: #{max_debt.analysed_module.complexity}
+          Flay suspects #{max_debt.analysed_module.duplication.to_i} areas of code duplication
           There are #{method_count} methods and #{smell_count} smell(s) from reek
         RESULTS
       end
 
+      def max_debt
+        result.max_debt
+      end
+
       def method_count
-        result.max_debt.analysed_module.methods_count
+        max_debt.analysed_module.methods_count
       end
 
       def smell_count
-        result.max_debt.analysed_module.smells.count
-      end
-
-      def construct_debts(modules)
-        modules.map do |mod|
-          path            = mod.path
-          file_attributes = OpenStruct.new
-          file_attributes.linecount = `wc -l #{path}`.match(/\d+/)[0].to_i
-          file_attributes.path = path
-          file_attributes.analysed_module = mod
-          file_attributes.source_code = File.read(path)
-          Debt.new(file_attributes)
-        end
+        max_debt.analysed_module.smells.count
       end
 
       def construct_rubycritic_modules(path)
