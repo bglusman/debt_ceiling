@@ -22,6 +22,10 @@ module DebtCeiling
       to_i + other.to_i
     end
 
+    def letter_grade
+      rating.to_s.downcase.to_sym
+    end
+
     private
 
     attr_reader :file_attributes
@@ -40,13 +44,21 @@ module DebtCeiling
 
     def internal_measure_debt
       external_augmented_debt +
-      cost_from_linecount_and_grade +
+      cost_from_static_analysis_points +
       debt_from_source_code_rules
     end
 
-    def cost_from_linecount_and_grade
+    def cost_from_static_analysis_points
       DebtCeiling.grade_points[letter_grade] +
-      file_attributes.linecount * DebtCeiling.per_line_grade_multipliers[letter_grade]
+      cost_from_non_grade_scoring
+    end
+
+    def cost_from_non_grade_scoring
+      non_grade_scoring = DebtCeiling.non_grade_scoring
+      analysed_module.complexity *  non_grade_scoring.complexity_multiplier +
+      analysed_module.methods_count * non_grade_scoring.method_count_multiplier +
+      analysed_module.smells.map(&:cost).inject(0, :+) * non_grade_scoring.smells_multiplier +
+      analysed_module.duplication * non_grade_scoring.duplication_multiplier
     end
 
     def debt_from_source_code_rules
@@ -94,10 +106,6 @@ module DebtCeiling
 
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
-    end
-
-    def letter_grade
-      rating.to_s.downcase.to_sym
     end
 
   end

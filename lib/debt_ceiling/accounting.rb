@@ -14,6 +14,11 @@ module DebtCeiling
         result.total_debt = result.debts.map(&:to_i).reduce(:+)
         puts "Current total tech debt: #{result.total_debt}"
         puts "Largest source of debt is: #{result.max_debt.name} at #{result.max_debt.to_i}"
+        puts "The rubycritic grade for that debt is: #{result.max_debt.letter_grade}"
+        puts "The flog complexity for that debt is: #{result.max_debt.analysed_module.complexity}"
+        puts "Flay suspects #{result.max_debt.analysed_module.duplication.to_i} areas of code duplication"
+        puts "There are #{result.max_debt.analysed_module.methods_count} methods " +
+             "and #{result.max_debt.analysed_module.smells.count} smell(s) from reek"
         result
       end
 
@@ -30,7 +35,7 @@ module DebtCeiling
       end
 
       def construct_rubycritic_modules(path)
-        Rubycritic.create(mode: :ci, paths: Array(path)).critique
+        Rubycritic.create(mode: :ci, format: :json, paths: Array(path)).critique
       end
     end
   end

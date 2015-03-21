@@ -15,8 +15,11 @@ DebtCeiling.configure do |c|
 
   #set the base cost per file for each letter grade, these are the current defaults
   c.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
-  #default multiplier for line length, a and b incur no penalty for long files by default
-  c.per_line_grade_multipliers = {a: 0, b: 0, c: 3, d: 21, f: 55}
+  #default multiplier for debt factors from flog, flay, reek and method count
+  c.non_grade_scoring.complexity_multiplier = 0.5
+  c.non_grade_scoring.method_count_multiplier = 0.5
+  c.non_grade_scoring.smells_multiplier = 3
+  c.non_grade_scoring.duplication_multiplier = 1.5
   #load custom debt calculations (see examples/debt.rb) from this path
   c.extension_path = "./debt.rb"
   #below two both use same mechanic, cost_per_todo just assumes capital
