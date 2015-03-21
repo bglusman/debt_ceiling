@@ -2,6 +2,8 @@ require 'configurations'
 require 'chronic'
 require_relative 'debt_ceiling/accounting'
 require_relative 'debt_ceiling/debt'
+require_relative 'debt_ceiling/compatibility'
+
 
 module DebtCeiling
   include Configurations
