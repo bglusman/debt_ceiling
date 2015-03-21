@@ -8,44 +8,45 @@ module DebtCeiling
   extend Forwardable
   extend self
 
-  attr_reader :debt
-  def_delegator :configuration, :extension_path
-  def_delegator :configuration, :blacklist
-  def_delegator :configuration, :whitelist
-  def_delegator :configuration, :cost_per_todo
-  def_delegator :configuration, :deprecated_reference_pairs
-  def_delegator :configuration, :manual_callouts
-  def_delegator :configuration, :grade_points
-  def_delegator :configuration, :reduction_date
-  def_delegator :configuration, :reduction_target
-  def_delegator :configuration, :debt_ceiling
+  attr_reader :total_debt, :accounting_result
 
-  configuration_defaults do |c|
-    c.extension_path = "#{Dir.pwd}/debt.rb"
-    c.blacklist = []
-    c.whitelist = []
-    c.deprecated_reference_pairs = {}
-    c.manual_callouts = ['TECH DEBT']
-    c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+  def_delegators :configuration, :extension_path, :blacklist, :whitelist,
+                 :cost_per_todo, :deprecated_reference_pairs, :manual_callouts,
+                 :grade_points, :reduction_date, :reduction_target, :debt_ceiling,
+                 :max_debt_per_module
+
+  configuration_defaults do |config|
+    config.extension_path = "#{Dir.pwd}/debt.rb"
+    config.blacklist = []
+    config.whitelist = []
+    config.deprecated_reference_pairs = {}
+    config.manual_callouts = ['TECH DEBT']
+    config.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
   end
 
+
+  def calculate(dir = '.', opts={preconfigured: false})
+    load_configuration unless @loaded || opts[:preconfigured]
+    @accounting_result = DebtCeiling::Accounting.calculate(dir)
+    @total_debt = accounting_result.total_debt
+    fail_test if failed_condition?
+    total_debt
+  end
+
+  private
+
   def load_configuration
-    if File.exist?(Dir.pwd + '/.debt_ceiling.rb')
-      load(Dir.pwd + '/.debt_ceiling.rb')
+    pwd = Dir.pwd
+    if File.exist?(pwd + '/.debt_ceiling.rb')
+      load(pwd + '/.debt_ceiling.rb')
     elsif File.exist?(Dir.home + '/.debt_ceiling.rb')
       load(Dir.home + '/.debt_ceiling.rb')
     else
-      puts "No .debt_ceiling.rb configuration file detected in #{Dir.pwd} or ~/, using defaults"
+      puts "No .debt_ceiling.rb configuration file detected in #{pwd} or ~/, using defaults"
     end
 
     load extension_path if extension_path && File.exist?(extension_path)
     @loaded = true
-  end
-
-  def calculate(dir = '.', opts={preconfigured: false})
-    load_configuration unless @loaded || opts[:preconfigured]
-    @debt = DebtCeiling::Accounting.calculate(dir)
-    evaluate
   end
 
   def blacklist_matching(matchers)
@@ -61,15 +62,21 @@ module DebtCeiling
     deprecated_reference_pairs[string] = value
   end
 
+  def failed_condition?
+    exceeded_total_limit? || missed_target? || max_debt_per_module_exceeded?
+  end
 
-  def evaluate
-    if debt_ceiling && debt_ceiling <= debt
-      fail_test
-    elsif reduction_target && reduction_target <= debt &&
+  def exceeded_total_limit?
+    debt_ceiling && debt_ceiling <= total_debt
+  end
+
+  def missed_target?
+    reduction_target && reduction_target <= total_debt &&
           Time.now > Chronic.parse(reduction_date)
-      fail_test
-    end
-    debt
+  end
+
+  def max_debt_per_module_exceeded?
+    max_debt_per_module && max_debt_per_module <= accounting_result.max_debt.to_i
   end
 
   def fail_test

@@ -4,36 +4,54 @@ module DebtCeiling
     extend Forwardable
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
-    attr_reader :file_attributes
     def_delegators :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
-    def_delegator :analysed_module, :rating
-    attr_accessor :debt_amount
-    def_delegator :debt_amount, :to_i
+    def_delegator  :analysed_module, :rating
+    attr_accessor  :debt_amount
+    def_delegator  :debt_amount, :to_i
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
       default_measure_debt if valid_debt?
     end
 
-    def default_measure_debt
-      cost = public_send(:measure_debt) if self.respond_to?(:measure_debt)
+    def name
+      file_attributes.analysed_module.name || path.to_s.split('/').last
+    end
 
-      unless cost
-        cost = public_send(:augment_debt) if respond_to?(:augment_debt)
-        cost = cost.to_i
-        letter_grade = rating.to_s.downcase
-        cost_per_line = DebtCeiling.configuration.grade_points[letter_grade.to_sym]
-        cost += file_attributes.linecount * cost_per_line
-        cost += debt_from_source_code_rules
-      end
-      self.debt_amount = cost
+    def +(other)
+      to_i + other.to_i
+    end
+
+    private
+
+    attr_reader :file_attributes
+
+    def default_measure_debt
+      self.debt_amount = external_measure_debt || internal_measure_debt
+    end
+
+    def external_measure_debt
+      public_send(:measure_debt) if self.respond_to?(:measure_debt)
+    end
+
+    def external_augmented_debt
+      (public_send(:augment_debt) if respond_to?(:augment_debt)).to_i
+    end
+
+    def internal_measure_debt
+      external_augmented_debt +
+      cost_from_linecount_and_grade +
+      debt_from_source_code_rules
+    end
+
+    def cost_from_linecount_and_grade
+      file_attributes.linecount * cost_per_line
     end
 
     def debt_from_source_code_rules
       manual_callout_debt +
       text_match_debt('TODO', DebtCeiling.cost_per_todo) +
-      DebtCeiling.deprecated_reference_pairs
-        .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
+      deprecated_reference_debt
     end
 
     def text_match_debt(string, cost)
@@ -44,6 +62,11 @@ module DebtCeiling
       DebtCeiling.manual_callouts.reduce(0) do |sum, callout|
         sum + debt_from_callout(callout)
       end
+    end
+
+    def deprecated_reference_debt
+      DebtCeiling.deprecated_reference_pairs
+        .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
     end
 
     def debt_from_callout(callout)
@@ -72,12 +95,13 @@ module DebtCeiling
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
     end
 
-    def name
-      file_attributes.analysed_module.name || path.to_s.split('/').last
+    def cost_per_line
+      DebtCeiling.grade_points[letter_grade]
     end
 
-    def +(other)
-      to_i + other.to_i
+    def letter_grade
+      rating.to_s.downcase.to_sym
     end
+
   end
 end

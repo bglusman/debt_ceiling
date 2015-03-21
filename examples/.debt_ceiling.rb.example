@@ -5,7 +5,7 @@ DebtCeiling.configure do |c|
   c.reduction_target = 100
   c.reduction_date   = 'Jan 1 2015'
   #set the multipliers per line of code in a file with each letter grade, these are the current defaults
-  c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
+  c.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
   #load custom debt calculations (see examples/debt.rb) from this path
   c.extension_path = "./debt.rb"
   #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
