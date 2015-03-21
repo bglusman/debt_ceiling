@@ -1,4 +1,5 @@
 require 'rubycritic'
+require 'rubycritic/cli/application'
 require 'ostruct'
 module DebtCeiling
   class Accounting
@@ -29,20 +30,7 @@ module DebtCeiling
       end
 
       def construct_rubycritic_modules(path)
-        if ENV['FULL_ANALYSIS']
-          Rubycritic::Orchestrator.new.critique([path])
-        else
-          # temporarily use Rubycritic internals until they provide an API
-          require 'rubycritic/modules_initializer'
-          require 'rubycritic/analysers/complexity'
-          require 'rubycritic/analysers/smells/flay'
-
-          modules = Rubycritic::ModulesInitializer.init([path])
-          [Rubycritic::Analyser::Complexity, Rubycritic::Analyser::FlaySmells].each do |analyser|
-            analyser.new(modules).run
-          end
-          modules
-        end
+        Rubycritic.create(mode: :ci, paths: Array(path)).critique
       end
     end
   end

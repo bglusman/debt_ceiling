@@ -23,9 +23,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'rubycritic', '~> 1.1.1'
+  s.add_runtime_dependency 'rubycritic', '~> 1.4'
   s.add_runtime_dependency 'chronic', '~> 0.10'
-  s.add_runtime_dependency 'configurations', '~> 2.0.0.pre'
+  s.add_runtime_dependency 'configurations', '~> 2.0'
   s.add_development_dependency 'pry', '~> 0.10'
   s.add_development_dependency 'rake', '~> 10.3'
   s.add_development_dependency 'rspec', '~> 3.1'
