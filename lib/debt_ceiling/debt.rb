@@ -44,15 +44,11 @@ module DebtCeiling
     end
 
     def cost_from_static_analysis_points
-      DebtCeiling.grade_points[letter_grade] +
-      cost_from_non_grade_scoring
+      DebtCeiling.grade_points[letter_grade] + cost_from_non_grade_scoring
     end
 
     def cost_from_non_grade_scoring
-      flog_flay_debt +
-      method_count_debt +
-      smells_debt +
-      line_count_debt
+      flog_flay_debt + method_count_debt + smells_debt + line_count_debt
     end
 
     def smells_debt
@@ -84,6 +80,5 @@ module DebtCeiling
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
     end
-
   end
 end

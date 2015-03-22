@@ -11,16 +11,11 @@ module DebtCeiling
       end
 
       def result
-        @result ||= construct_result
+        @result ||= result_from_analysed_modules(construct_rubycritic_modules(path))
       end
 
       def clear
         @result = nil
-      end
-
-      def construct_result
-        analysed_modules   = construct_rubycritic_modules(path)
-        result_from_analysed_modules(analysed_modules)
       end
 
       def result_from_analysed_modules(analysed_modules)

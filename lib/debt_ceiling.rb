@@ -22,6 +22,7 @@ module DebtCeiling
                  :max_debt_per_module, :non_grade_scoring, :complexity_multiplier ,
                  :method_count_multiplier, :smells_multiplier, :duplication_multiplier,
                  :ideal_max_line_count, :cost_per_line_over_ideal
+
   configuration_defaults do |config|
     config.extension_path = "#{Dir.pwd}/debt.rb"
     config.blacklist = []
@@ -53,6 +54,21 @@ module DebtCeiling
     end
   end
 
+  def load_configuration(config_file_name=".debt_ceiling.rb")
+    pwd = Dir.pwd
+    home = Dir.home
+    if File.exist?("#{pwd}/#{config_file_name}")
+      load("#{pwd}/#{config_file_name}")
+    elsif File.exist?("#{home}/#{config_file_name}")
+      load("#{home}/#{config_file_name}")
+    else
+      puts "No #{config_file_name} configuration file detected in #{pwd} or ~/, using defaults"
+    end
+
+    load extension_path if extension_path && File.exist?(extension_path)
+    @loaded = true
+  end
+
   def clear
     @accounting_result = nil
     Accounting.clear
@@ -60,19 +76,6 @@ module DebtCeiling
 
   private
 
-  def load_configuration
-    pwd = Dir.pwd
-    if File.exist?(pwd + '/.debt_ceiling.rb')
-      load(pwd + '/.debt_ceiling.rb')
-    elsif File.exist?(Dir.home + '/.debt_ceiling.rb')
-      load(Dir.home + '/.debt_ceiling.rb')
-    else
-      puts "No .debt_ceiling.rb configuration file detected in #{pwd} or ~/, using defaults"
-    end
-
-    load extension_path if extension_path && File.exist?(extension_path)
-    @loaded = true
-  end
 
   def blacklist_matching(matchers)
     @blacklist = matchers.map { |matcher| Regexp.new(matcher) }
