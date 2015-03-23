@@ -1,12 +1,12 @@
 module DebtCeiling
-  module CustomDebtAnalysis
+  class ExplicitAssignedDebt < Debt
 
-    def external_measure_debt
-      public_send(:measure_debt) if self.respond_to?(:measure_debt)
-    end
+    private
+    def_delegator :file_attributes, :source_code
 
-    def external_augmented_debt
-      (public_send(:augment_debt) if respond_to?(:augment_debt)).to_i
+    def default_measure_debt
+      external_augmented_debt +
+      debt_from_source_code_rules
     end
 
     def debt_from_source_code_rules
@@ -37,15 +37,6 @@ module DebtCeiling
         amount = string.match(/\d+/).to_s if string
         sum + amount.to_i
       end
-    end
-
-    def valid_debt?
-      black_empty = DebtCeiling.blacklist.empty?
-      white_empty = DebtCeiling.whitelist.empty?
-      fail DoNotWhitelistAndBlacklistSimulateneously unless black_empty || white_empty
-      (black_empty && white_empty) ||
-      (black_empty && self.class.whitelist_includes?(self)) ||
-      (white_empty && !self.class.blacklist_includes?(self))
     end
   end
 end
