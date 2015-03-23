@@ -20,7 +20,12 @@ module DebtCeiling
 
       def result_from_analysed_modules(analysed_modules)
         analysis            = OpenStruct.new
-        analysis.debts      = analysed_modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
+        analysis.debts      = analysed_modules.map { |mod|
+          file_attributes = FileAttributes.new(mod)
+          [StaticAnalysisDebt.new(file_attributes),
+           ExplicitAssignedDebt.new(file_attributes)
+          ]
+        }.flatten
         analysis.max_debt   = analysis.debts.max_by(&:to_i)
         analysis.total_debt = analysis.debts.map(&:to_i).reduce(:+)
         analysis
