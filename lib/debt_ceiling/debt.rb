@@ -2,12 +2,15 @@ require 'forwardable'
 module DebtCeiling
   class Debt
     extend Forwardable
+    include CustomDebtAnalysis
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes, :path, :analysed_module, :module_name, :linecount, :source_code
-    def_delegator  :analysed_module, :rating
-    attr_accessor  :debt_amount
-    def_delegator  :debt_amount, :to_i
+    def_delegators :non_grade_scoring, :complexity_multiplier, :duplication_multiplier, :smells_multiplier,
+                   :method_count_multiplier, :ideal_max_line_count, :cost_per_line_over_ideal
+    def_delegator :analysed_module, :rating
+    attr_accessor :debt_amount
+    def_delegator :debt_amount, :to_i
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
@@ -22,6 +25,10 @@ module DebtCeiling
       to_i + other.to_i
     end
 
+    def letter_grade
+      rating.to_s.downcase.to_sym
+    end
+
     private
 
     attr_reader :file_attributes
@@ -30,61 +37,40 @@ module DebtCeiling
       self.debt_amount = external_measure_debt || internal_measure_debt
     end
 
-    def external_measure_debt
-      public_send(:measure_debt) if self.respond_to?(:measure_debt)
-    end
-
-    def external_augmented_debt
-      (public_send(:augment_debt) if respond_to?(:augment_debt)).to_i
-    end
-
     def internal_measure_debt
       external_augmented_debt +
-      cost_from_linecount_and_grade +
+      cost_from_static_analysis_points +
       debt_from_source_code_rules
     end
 
-    def cost_from_linecount_and_grade
-      file_attributes.linecount * cost_per_line
+    def cost_from_static_analysis_points
+      DebtCeiling.grade_points[letter_grade] + cost_from_non_grade_scoring
     end
 
-    def debt_from_source_code_rules
-      manual_callout_debt +
-      text_match_debt('TODO', DebtCeiling.cost_per_todo) +
-      deprecated_reference_debt
+    def cost_from_non_grade_scoring
+      flog_flay_debt + method_count_debt + smells_debt + line_count_debt
     end
 
-    def text_match_debt(string, cost)
-      source_code.scan(string).count * cost.to_i
+    def smells_debt
+      analysed_module.smells.map(&:cost).inject(0, :+) * smells_multiplier
     end
 
-    def manual_callout_debt
-      DebtCeiling.manual_callouts.reduce(0) do |sum, callout|
-        sum + debt_from_callout(callout)
-      end
+    def method_count_debt
+      analysed_module.methods_count * method_count_multiplier
     end
 
-    def deprecated_reference_debt
-      DebtCeiling.deprecated_reference_pairs
-        .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
+    def flog_flay_debt
+      analysed_module.complexity *  complexity_multiplier +
+      analysed_module.duplication * duplication_multiplier
     end
 
-    def debt_from_callout(callout)
-      source_code.each_line.reduce(0) do |sum, line|
-        match_data = line.match(Regexp.new(callout + '.*'))
-        string = match_data.to_s.split(callout).last
-        amount = string.match(/\d+/).to_s if string
-        sum + amount.to_i
-      end
+    def line_count_debt
+      excess_lines = linecount - ideal_max_line_count
+      excess_lines > 0 ? excess_lines * cost_per_line_over_ideal : 0
     end
 
-    def valid_debt?
-      black_empty = DebtCeiling.blacklist.empty?
-      white_empty = DebtCeiling.whitelist.empty?
-      fail DoNotWhitelistAndBlacklistSimulateneously unless black_empty || white_empty
-      (black_empty && white_empty) ||
-      (black_empty && self.class.whitelist_includes?(self)) ||
-      (white_empty && !self.class.blacklist_includes?(self))
+    def non_grade_scoring
+      DebtCeiling
     end
 
     def self.whitelist_includes?(debt)
@@ -94,14 +80,5 @@ module DebtCeiling
     def self.blacklist_includes?(debt)
       DebtCeiling.blacklist.find { |filename| debt.path.match filename }
     end
-
-    def cost_per_line
-      DebtCeiling.grade_points[letter_grade]
-    end
-
-    def letter_grade
-      rating.to_s.downcase.to_sym
-    end
-
   end
 end

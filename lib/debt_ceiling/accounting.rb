@@ -1,48 +1,57 @@
-require 'rubycritic'
-require 'ostruct'
 module DebtCeiling
   class Accounting
     DebtCeilingExceeded  = Class.new(StandardError)
     TargetDeadlineMissed = Class.new(StandardError)
     class << self
+      attr_reader :result, :path
       def calculate(path)
-        analysed_modules  = construct_rubycritic_modules(path)
-        result            = OpenStruct.new
-        result.debts      = construct_debts(analysed_modules)
-        result.max_debt   = result.debts.max_by(&:to_i)
-        result.total_debt = result.debts.map(&:to_i).reduce(:+)
-        puts "Current total tech debt: #{result.total_debt}"
-        puts "Largest source of debt is: #{result.max_debt.name} at #{result.max_debt.to_i}"
+        @path = path
+        print_results
         result
       end
 
-      def construct_debts(modules)
-        modules.map do |mod|
-          path            = mod.path
-          file_attributes = OpenStruct.new
-          file_attributes.linecount = `wc -l #{path}`.match(/\d+/)[0].to_i
-          file_attributes.path = path
-          file_attributes.analysed_module = mod
-          file_attributes.source_code = File.read(path)
-          Debt.new(file_attributes)
-        end
+      def result
+        @result ||= result_from_analysed_modules(construct_rubycritic_modules(path))
+      end
+
+      def clear
+        @result = nil
+      end
+
+      def result_from_analysed_modules(analysed_modules)
+        analysis            = OpenStruct.new
+        analysis.debts      = analysed_modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
+        analysis.max_debt   = analysis.debts.max_by(&:to_i)
+        analysis.total_debt = analysis.debts.map(&:to_i).reduce(:+)
+        analysis
+      end
+
+      def print_results
+        puts <<-RESULTS
+          Current total tech debt: #{result.total_debt}
+          Largest source of debt is: #{max_debt.name} at #{max_debt.to_i}
+          The rubycritic grade for that debt is: #{max_debt.letter_grade}
+          The flog complexity for that debt is: #{max_debt.analysed_module.complexity}
+          Flay suspects #{max_debt.analysed_module.duplication.to_i} areas of code duplication
+          There are #{method_count} methods and #{smell_count} smell(s) from reek.
+          The file is #{max_debt.linecount} lines long.
+        RESULTS
+      end
+
+      def max_debt
+        result.max_debt
+      end
+
+      def method_count
+        max_debt.analysed_module.methods_count
+      end
+
+      def smell_count
+        max_debt.analysed_module.smells.count
       end
 
       def construct_rubycritic_modules(path)
-        if ENV['FULL_ANALYSIS']
-          Rubycritic::Orchestrator.new.critique([path])
-        else
-          # temporarily use Rubycritic internals until they provide an API
-          require 'rubycritic/modules_initializer'
-          require 'rubycritic/analysers/complexity'
-          require 'rubycritic/analysers/smells/flay'
-
-          modules = Rubycritic::ModulesInitializer.init([path])
-          [Rubycritic::Analyser::Complexity, Rubycritic::Analyser::FlaySmells].each do |analyser|
-            analyser.new(modules).run
-          end
-          modules
-        end
+        Rubycritic.create(mode: :ci, format: :json, paths: Array(path)).critique
       end
     end
   end

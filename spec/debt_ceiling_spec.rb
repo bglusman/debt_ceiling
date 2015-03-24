@@ -39,4 +39,9 @@ describe DebtCeiling do
     expect(DebtCeiling.calculate('spec/support/manual_example.rb')).to be 150 # hardcoded in example file
   end
 
+  it 'assigns debt for file length over ideal file size' do
+    DebtCeiling.configure {|c| c.ideal_max_line_count = 10; c.cost_per_line_over_ideal = 100 }
+    expect(DebtCeiling.calculate('spec/support/long_file_example.rb', preconfigured: true)).to be 300 # hardcoded 13 lines long example file
+  end
+
 end

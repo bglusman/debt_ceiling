@@ -4,19 +4,38 @@ DebtCeiling.configure do |c|
   #exceeding this target will fail after the reduction date (parsed by Chronic)
   c.reduction_target = 100
   c.reduction_date   = 'Jan 1 2015'
-  #set the multipliers per line of code in a file with each letter grade, these are the current defaults
+  #Max debt to allow in any one file/module before failing tests
+  c.max_debt_per_module = 200
+
+  #ABOVE config ^ effect what amount of debt where and when can fail your test suite
+  #      none of the above have any default settings
+
+  #BELOW config v effect how debt is calculated
+  #      most of these have 'sane' default settings, look at code and/or docs for details
+
+  #set the base cost per file for each letter grade, these are the current defaults
   c.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
+  #default multiplier for debt factors from flog, flay, reek and method count
+  c.complexity_multiplier = 0.5
+  c.method_count_multiplier = 0.5
+  c.smells_multiplier = 3
+  c.duplication_multiplier = 1.5
+  c.ideal_max_line_count   = 100
+  c.cost_per_line_over_ideal = 1
   #load custom debt calculations (see examples/debt.rb) from this path
   c.extension_path = "./debt.rb"
-  #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
+  #below two both use same mechanic, cost_per_todo just assumes capital
+  #TODO as string, cost_per_todo defaults to 0
   c.cost_per_todo  = 50
   c.deprecated_reference_pairs = { 'DEPRECATED_API' => 20}
-  #manually assign debt to code sections with these or with default "TECH DEBT", as a comment like #TECH DEBT +50
+  #manually assign arbitrary case specific amount of debt to code sections
+  #with specified terms or with default "TECH DEBT", as a comment like #TECH DEBT +50
   c.manual_callouts += ["REFACTOR THIS", "HORRIBLE HACK"]
   #only count debt scores for files/folders matching these strings (converted to regexes)
   c.whitelist = %w(app lib)
   #or
-  #exclude debt scores for files/folders matching these strings (commented as mutually exclusive)
+  #exclude debt scores for files/folders matching these strings
+  #(commented out here as white/black lists are mutually exclusive)
   #c.blacklist = %w(config version debt_ceiling.rb)
 end
 
