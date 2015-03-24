@@ -3,7 +3,9 @@ module DebtCeiling
     DebtCeilingExceeded  = Class.new(StandardError)
     TargetDeadlineMissed = Class.new(StandardError)
     class << self
+      extend Forwardable
       attr_reader :result, :path
+      def_delegators :result, :max_debt, :total_debt, :debts
       def calculate(path)
         @path = path
         print_results
@@ -21,25 +23,33 @@ module DebtCeiling
       def result_from_analysed_modules(analysed_modules)
         analysis            = OpenStruct.new
         analysis.debts      = analysed_modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
-        analysis.max_debt   = analysis.debts.max_by(&:to_i)
-        analysis.total_debt = analysis.debts.map(&:to_i).reduce(:+)
+        analysis.total_debt = get_total_debt(analysis)
+        analysis.max_debt   = get_max_debt(analysis)
         analysis
       end
 
       def print_results
         puts <<-RESULTS
-          Current total tech debt: #{result.total_debt}
+          Current total tech debt: #{total_debt}
           Largest source of debt is: #{max_debt.name} at #{max_debt.to_i}
           The rubycritic grade for that debt is: #{max_debt.letter_grade}
-          The flog complexity for that debt is: #{max_debt.analysed_module.complexity}
-          Flay suspects #{max_debt.analysed_module.duplication.to_i} areas of code duplication
+          The flog complexity for that debt is: #{max_debt_module.complexity}
+          Flay suspects #{max_debt_module.duplication.to_i} areas of code duplication
           There are #{method_count} methods and #{smell_count} smell(s) from reek.
           The file is #{max_debt.linecount} lines long.
         RESULTS
       end
 
-      def max_debt
-        result.max_debt
+      def get_max_debt(analysis)
+        analysis.debts.max_by(&:to_i)
+      end
+
+      def get_total_debt(analysis)
+        analysis.debts.map(&:to_i).reduce(:+)
+      end
+
+      def max_debt_module
+        max_debt.analysed_module
       end
 
       def method_count

@@ -1,4 +1,3 @@
-require 'forwardable'
 module DebtCeiling
   class Debt
     extend Forwardable
