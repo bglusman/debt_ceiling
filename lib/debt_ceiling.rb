@@ -15,7 +15,7 @@ module DebtCeiling
   extend Forwardable
   extend self
 
-  attr_reader :total_debt, :accounting_result
+  attr_reader :total_debt, :accounting
 
   def_delegators :configuration, :extension_path, :blacklist, :whitelist,
                  :cost_per_todo, :deprecated_reference_pairs, :manual_callouts,
@@ -43,15 +43,16 @@ module DebtCeiling
 
 
   def calculate(dir = '.', opts={preconfigured: false})
-    @total_debt = accounting_result(dir, opts).total_debt
+    @total_debt = accounting(dir, opts).total_debt
+    accounting.print_results unless opts[:skip_report]
     fail_test if failed_condition?
     total_debt
   end
 
-  def accounting_result(dir = '.', opts={preconfigured: false})
-    @accounting_result ||= begin
+  def accounting(dir = '.', opts={preconfigured: false})
+    @accounting ||= begin
       load_configuration unless @loaded || opts[:preconfigured]
-      Accounting.calculate(dir)
+      Accounting.new(dir)
     end
   end
 
@@ -71,8 +72,7 @@ module DebtCeiling
   end
 
   def clear
-    @accounting_result = nil
-    Accounting.clear
+    @accounting = nil
   end
 
   private
@@ -105,7 +105,7 @@ module DebtCeiling
   end
 
   def max_debt_per_module_exceeded?
-    max_debt_per_module && max_debt_per_module <= accounting_result.max_debt.to_i
+    max_debt_per_module && max_debt_per_module <= accounting.max_debt.to_i
   end
 
   def fail_test
