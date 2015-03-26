@@ -42,7 +42,6 @@ module DebtCeiling
   def calculate(dir = '.', opts={preconfigured: false})
     @total_debt = accounting(dir, opts).total_debt
     accounting.print_results unless opts[:skip_report]
-    # require 'pry'; binding.pry
     fail_test if failed_condition?
     total_debt
   end
