@@ -50,7 +50,7 @@ module DebtCeiling
   def accounting(dir = '.', opts={preconfigured: false})
     @accounting ||= begin
       load_configuration unless @loaded || opts[:preconfigured]
-      Accounting.new(dir, opts)
+      Accounting.new(dir)
     end
   end
 
