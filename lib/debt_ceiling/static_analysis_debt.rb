@@ -1,7 +1,7 @@
 module DebtCeiling
   class StaticAnalysisDebt
     extend Forwardable
-
+    include CommonMethods
     def_delegators :configuration,
                    :complexity_multiplier, :duplication_multiplier, :smells_multiplier,
                    :grade_points, :method_count_multiplier, :ideal_max_line_count,
@@ -20,10 +20,6 @@ module DebtCeiling
       @debt_amount      = cost_from_static_analysis_points
     end
 
-    def +(other)
-      self.to_i + other.to_i
-    end
-
     private
 
     attr_reader :file_attributes, :debt_amount
@@ -34,10 +30,6 @@ module DebtCeiling
 
     def cost_from_non_grade_scoring
       flog_flay_debt + method_count_debt + smells_debt + line_count_debt
-    end
-
-    def configuration
-      DebtCeiling.configuration
     end
 
     def letter_grade

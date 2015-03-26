@@ -1,6 +1,7 @@
 module DebtCeiling
   class CustomDebt
     extend Forwardable
+    include CommonMethods
 
     def_delegators :configuration,
                    :deprecated_reference_pairs, :manual_callouts, :cost_per_todo
@@ -14,17 +15,9 @@ module DebtCeiling
       @debt_amount      = default_measure_debt
     end
 
-    def +(other)
-      self.to_i + other.to_i
-    end
-
     private
 
     attr_reader :file_attributes, :debt_amount
-
-    def configuration
-      DebtCeiling.configuration
-    end
 
     def external_measure_debt
       public_send(:measure_debt) if self.respond_to?(:measure_debt)

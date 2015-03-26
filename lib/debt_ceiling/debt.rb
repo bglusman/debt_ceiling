@@ -1,6 +1,7 @@
 module DebtCeiling
   class Debt
     extend Forwardable
+    include CommonMethods
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes,
@@ -23,10 +24,6 @@ module DebtCeiling
       analysed_module.name || path.to_s.split('/').last
     end
 
-    def +(other)
-      to_i + other.to_i
-    end
-
     def letter_grade
       rating.to_s.downcase.to_sym
     end
@@ -34,10 +31,6 @@ module DebtCeiling
     private
 
     attr_reader :file_attributes, :debt_amount
-
-    def configuration
-      DebtCeiling.configuration
-    end
 
     def internal_measure_debt
       debt_types.reduce(&:+)
