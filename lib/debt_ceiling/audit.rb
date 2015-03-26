@@ -1,6 +1,8 @@
 module DebtCeiling
   class Audit
     extend Forwardable
+    include CommonMethods
+    undef :+
 
     CONFIG_FILE_NAME = ".debt_ceiling.rb"
     CONFIG_LOCATIONS = ["#{Dir.pwd}/#{CONFIG_FILE_NAME}", "#{Dir.home}/#{CONFIG_FILE_NAME}"]
@@ -37,10 +39,6 @@ module DebtCeiling
     def perform_accounting
       load_configuration unless loaded
       Accounting.new(dir)
-    end
-
-    def configuration
-      DebtCeiling.configuration
     end
 
     def blacklist_matching(matchers)
