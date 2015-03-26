@@ -1,8 +1,8 @@
-[![Gem Version](https://badge.fury.io/rb/debt_ceiling.svg)](http://badge.fury.io/rb/debt_ceiling) 
+[![Gem Version](https://badge.fury.io/rb/debt_ceiling.svg)](http://badge.fury.io/rb/debt_ceiling)
 [![Build Status](https://travis-ci.org/bglusman/debt_ceiling.svg?branch=master)](https://travis-ci.org/bglusman/debt_ceiling)
-[![Coverage Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling?branch=master) 
-[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling) 
-[![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling) 
+[![Coverage Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling?branch=master)
+[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling)
+[![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling)
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
 #DebtCeiling
 
@@ -63,11 +63,7 @@ As shown in example file, set a path for `extension_path` pointing to a file def
 
 * default/custom points per reek smell detected (not currently part of RubyCritic grading, but available in full analysis)
 
-* every line over x ideal file size is y points of debt
-
 * multipliers for important files
-
-* `debt_ceiling_per_file` option to cap max debt for any one analyzed module
 
 * command line options to configure options per run/without a `.debt_ceiling.rb` file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
 

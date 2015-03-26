@@ -5,7 +5,7 @@ module DebtCeiling
     extend Forwardable
     attr_reader :result, :path, :debts, :total_debt, :max_debt
 
-    def initialize(path)
+    def initialize(path, opts = {})
       @path = path
       calc_debt_for_modules(construct_rubycritic_modules(path))
     end

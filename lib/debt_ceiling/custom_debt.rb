@@ -1,17 +1,47 @@
 module DebtCeiling
-  module CustomDebtAnalysis
+  class CustomDebt
+    extend Forwardable
+
+    def_delegators :configuration,
+                   :deprecated_reference_pairs, :manual_callouts, :cost_per_todo
+
+    def_delegator :file_attributes, :source_code
+
+    def_delegator  :debt_amount, :to_i
+
+    def initialize(file_attributes)
+      @file_attributes  = file_attributes
+      @debt_amount      = default_measure_debt
+    end
+
+    def +(other)
+      self.to_i + other.to_i
+    end
+
+    private
+
+    attr_reader :file_attributes, :debt_amount
+
+    def configuration
+      DebtCeiling.configuration
+    end
 
     def external_measure_debt
       public_send(:measure_debt) if self.respond_to?(:measure_debt)
+    end
+
+    def default_measure_debt
+      external_measure_debt || debt_from_source_code_rules
     end
 
     def external_augmented_debt
       (public_send(:augment_debt) if respond_to?(:augment_debt)).to_i
     end
 
+
     def debt_from_source_code_rules
       manual_callout_debt +
-      text_match_debt('TODO', DebtCeiling.cost_per_todo) +
+      text_match_debt('TODO', cost_per_todo) +
       deprecated_reference_debt
     end
 
@@ -20,13 +50,13 @@ module DebtCeiling
     end
 
     def manual_callout_debt
-      DebtCeiling.manual_callouts.reduce(0) do |sum, callout|
+      manual_callouts.reduce(0) do |sum, callout|
         sum + debt_from_callout(callout)
       end
     end
 
     def deprecated_reference_debt
-      DebtCeiling.deprecated_reference_pairs
+      deprecated_reference_pairs
         .reduce(0) {|accum, (string, value)| accum + text_match_debt(string, value.to_i) }
     end
 
@@ -37,15 +67,6 @@ module DebtCeiling
         amount = string.match(/\d+/).to_s if string
         sum + amount.to_i
       end
-    end
-
-    def valid_debt?
-      black_empty = DebtCeiling.blacklist.empty?
-      white_empty = DebtCeiling.whitelist.empty?
-      fail DoNotWhitelistAndBlacklistSimulateneously unless black_empty || white_empty
-      (black_empty && white_empty) ||
-      (black_empty && self.class.whitelist_includes?(self)) ||
-      (white_empty && !self.class.blacklist_includes?(self))
     end
   end
 end
