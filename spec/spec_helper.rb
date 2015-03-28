@@ -10,6 +10,6 @@ RSpec.configure do |config|
       c.max_debt_per_module = 150
       c.debt_ceiling = 250
     end
-    DebtCeiling.audit('.')
+    DebtCeiling.audit('.', preconfigured: true)
   end
 end

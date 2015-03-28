@@ -21,7 +21,18 @@ Current features include:
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
-To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
+To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit(root_dir)` from your test helper as an additional test, or drop the configuration directly in your spec helper as debt ceiling does to calculate it's own debt:
+```ruby
+  config.after(:all) do
+    DebtCeiling.configure do |c|
+      c.whitelist = %w(app lib)
+      c.max_debt_per_module = 150
+      c.debt_ceiling = 250
+    end
+    DebtCeiling.audit('.', preconfigured: true)
+  end
+```
+  It will exit with a non-zero failure if you exceed your ceiling(s) or miss your target, failing the test suite.
 
 These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
