@@ -1,10 +1,13 @@
 module DebtCeiling
   class Debt
     extend Forwardable
+    include CommonMethods
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes,
                    :path, :analysed_module, :module_name, :linecount, :source_code
+    def_delegators :configuration,
+                  :whitelist, :blacklist
 
     def_delegator :analysed_module, :rating
     def_delegator :debt_amount, :to_i
@@ -21,10 +24,6 @@ module DebtCeiling
       analysed_module.name || path.to_s.split('/').last
     end
 
-    def +(other)
-      to_i + other.to_i
-    end
-
     def letter_grade
       rating.to_s.downcase.to_sym
     end
@@ -33,29 +32,25 @@ module DebtCeiling
 
     attr_reader :file_attributes, :debt_amount
 
-    def configuration
-      DebtCeiling.configuration
-    end
-
     def internal_measure_debt
       debt_types.reduce(&:+)
     end
 
-    def self.whitelist_includes?(debt)
-      DebtCeiling.whitelist.find { |filename| debt.path.match filename }
+    def whitelist_includes?(debt)
+      whitelist.find { |filename| debt.path.match filename }
     end
 
-    def self.blacklist_includes?(debt)
-      DebtCeiling.blacklist.find { |filename| debt.path.match filename }
+    def blacklist_includes?(debt)
+      blacklist.find { |filename| debt.path.match filename }
     end
 
     def valid_debt?
-      black_empty = DebtCeiling.blacklist.empty?
-      white_empty = DebtCeiling.whitelist.empty?
+      black_empty = blacklist.empty?
+      white_empty = whitelist.empty?
       fail DoNotWhitelistAndBlacklistSimulateneously unless black_empty || white_empty
       (black_empty && white_empty) ||
-      (black_empty && self.class.whitelist_includes?(self)) ||
-      (white_empty && !self.class.blacklist_includes?(self))
+      (black_empty && whitelist_includes?(self)) ||
+      (white_empty && !blacklist_includes?(self))
     end
   end
 end
