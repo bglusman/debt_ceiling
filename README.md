@@ -11,7 +11,10 @@ Main goal is to enforce a technical debt ceiling and tech debt reduction deadlin
 Travis tests are running on 1.9.3, 2.1.1, Rubinius 2.2 and JRuby 1.9 mode.
 
 Current features include:
-* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file line (add FULL_ANALYSIS=true for a lengthier analysis by RubyCritic including churn and more code smells, but same grading logic, made available for use by hooks)
+* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file 
+* configuring multipliers for specific static analysis attributes, including complexity, duplication, method count, reek smells
+* configuring ideal max lines per file/module, and a per line penalty for each additional line
+* configuing a max debt per file/module, exceeding which will fail tests
 * Comment added explicit/manual debt assignment, via `#TECH DEBT +100` or custom word/phrase
 * Whitelisting/blacklisting files by matching path/filename
 * Modifying or replacing default calculation on a per file basis
@@ -36,17 +39,17 @@ To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_t
 
 These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
-Additional customization is supported via two method hooks in the debt class, which DebtCeiling will load from a provided extension_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/debt.rb.example)
+Additional customization is supported via two method hooks in the debt class, which DebtCeiling will load from a provided extension_path in the main config file, which should look like the [example file](https://github.com/bglusman/debt_ceiling/blob/master/examples/custom_debt.rb.example)
 
 You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling.rb file in the project's home directory:
 
 ```
 DebtCeiling.configure do |c|
   #exceeding this will fail a test, if you run debt_ceiling binary/calculate method from test suite
-  c.debt_ceiling = 500
+  c.debt_ceiling = 250
   #exceeding this target will fail after the reduction date (parsed by Chronic)
   c.reduction_target = 100
-  c.reduction_date   = 'Jan 1 2015'
+  c.reduction_date   = 'Jan 1 2016'
   #set the multipliers per line of code in a file with each letter grade, these are the current defaults
   c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
   #load custom debt calculations (see examples/debt.rb) from this path
@@ -66,13 +69,11 @@ end
 
 As mentioned/linked above, additional customization is supported via a debt.rb file which may define one or both of two methods DebtCeiling will call if defined when calculating debt for each module scanned (if it passes the whitelist/blacklist stage of filtering).
 
-As shown in example file, set a path for `extension_path` pointing to a file defining `DebtCeiling::Debt` like the one in examples directory, and define its methods for your own additional calculation per file.
+As shown in example file, set a path for `extension_path` pointing to a file defining `DebtCeiling::CustomDebt` like the one in examples directory, and define its methods for your own additional calculation per file.
 
 ### Improvement ideas/suggestsions for contributing:
 
 * rubocop/cane integration debt for style violations
-
-* default/custom points per reek smell detected (not currently part of RubyCritic grading, but available in full analysis)
 
 * multipliers for important files
 
