@@ -1,8 +1,8 @@
-[![Gem Version](https://badge.fury.io/rb/debt_ceiling.svg)](http://badge.fury.io/rb/debt_ceiling) 
+[![Gem Version](https://badge.fury.io/rb/debt_ceiling.svg)](http://badge.fury.io/rb/debt_ceiling)
 [![Build Status](https://travis-ci.org/bglusman/debt_ceiling.svg?branch=master)](https://travis-ci.org/bglusman/debt_ceiling)
-[![Coverage Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling?branch=master) 
-[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling) 
-[![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling) 
+[![Coverage Status](https://img.shields.io/coveralls/bglusman/debt_ceiling.svg)](https://coveralls.io/r/bglusman/debt_ceiling?branch=master)
+[![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling)
+[![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling)
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
 #DebtCeiling
 
@@ -21,7 +21,18 @@ Current features include:
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
-To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.calculate(root_dir)` from your test helper as an additional test.  It will exit with a non-zero failure if you exceed your ceiling or miss your target, failing the test suite.
+To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit(root_dir)` from your test helper as an additional test, or drop the configuration directly in your spec helper as debt ceiling does to calculate it's own debt:
+```ruby
+  config.after(:all) do
+    DebtCeiling.configure do |c|
+      c.whitelist = %w(app lib)
+      c.max_debt_per_module = 150
+      c.debt_ceiling = 250
+    end
+    DebtCeiling.audit('.', preconfigured: true)
+  end
+```
+  It will exit with a non-zero failure if you exceed your ceiling(s) or miss your target, failing the test suite.
 
 These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
@@ -63,11 +74,7 @@ As shown in example file, set a path for `extension_path` pointing to a file def
 
 * default/custom points per reek smell detected (not currently part of RubyCritic grading, but available in full analysis)
 
-* every line over x ideal file size is y points of debt
-
 * multipliers for important files
-
-* `debt_ceiling_per_file` option to cap max debt for any one analyzed module
 
 * command line options to configure options per run/without a `.debt_ceiling.rb` file (could be done with [ENVied](https://github.com/eval/envied) gem perhaps, or [commander](https://github.com/tj/commander) or [one of these](https://www.ruby-toolbox.com/categories/CLI_Option_Parsers)
 
