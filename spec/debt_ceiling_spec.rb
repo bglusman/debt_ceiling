@@ -30,16 +30,16 @@ describe DebtCeiling do
   it 'adds debt for todos with specified value' do
     todo_amount = 50
     DebtCeiling.configure {|c| c.cost_per_todo = todo_amount }
-    expect(DebtCeiling.audit('spec/support/todo_example.rb').total_debt).to be todo_amount
+    expect(DebtCeiling.audit('spec/support/todo_example.rb', preconfigured: true).total_debt).to be todo_amount
   end
 
   it 'allows manual debt with TECH DEBT comment' do
-    expect(DebtCeiling.audit('spec/support/manual_example.rb').total_debt).to be 100 # hardcoded in example file
+    expect(DebtCeiling.audit('spec/support/manual_example.rb', preconfigured: true).total_debt).to be 100 # hardcoded in example file
   end
 
   it 'allows manual debt with arbitrarily defined comment' do
     DebtCeiling.configure {|c| c.manual_callouts += ['REFACTOR'] }
-    expect(DebtCeiling.audit('spec/support/manual_example.rb').total_debt).to be 150 # hardcoded in example file
+    expect(DebtCeiling.audit('spec/support/manual_example.rb', preconfigured: true).total_debt).to be 150 # hardcoded in example file
   end
 
   it 'assigns debt for file length over ideal file size' do

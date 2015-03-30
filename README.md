@@ -11,7 +11,7 @@ Main goal is to enforce a technical debt ceiling and tech debt reduction deadlin
 Travis tests are running on 1.9.3, 2.1.1, Rubinius 2.2 and JRuby 1.9 mode.
 
 Current features include:
-* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file 
+* configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file
 * configuring multipliers for specific static analysis attributes, including complexity, duplication, method count, reek smells
 * configuring ideal max lines per file/module, and a per line penalty for each additional line
 * configuing a max debt per file/module, exceeding which will fail tests
@@ -24,7 +24,7 @@ Current features include:
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
-To integrate in a test suite, set a value for `debt_ceiling` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit(root_dir)` from your test helper as an additional test, or drop the configuration directly in your spec helper as debt ceiling does to calculate it's own debt:
+To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_module` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit(root_dir)` from your test helper as an additional test, or drop the call and/or configuration directly in your spec helper:
 ```ruby
   config.after(:all) do
     DebtCeiling.configure do |c|
@@ -52,8 +52,8 @@ DebtCeiling.configure do |c|
   c.reduction_date   = 'Jan 1 2016'
   #set the multipliers per line of code in a file with each letter grade, these are the current defaults
   c.grade_points = { a: 0, b: 10, c: 20, d: 40, f: 100 }
-  #load custom debt calculations (see examples/debt.rb) from this path
-  c.extension_path = "./debt.rb"
+  #load custom debt calculations (see examples/custom_debt.rb) from this path
+  c.extension_path = "./custom_debt.rb"
   #below two both use same mechanic, todo just assumes capital TODO as string, cost_per_todo defaults to 0
   c.cost_per_todo  = 50
   c.deprecated_reference_pairs = { 'DEPRECATED_API' => 20}
@@ -67,7 +67,7 @@ DebtCeiling.configure do |c|
 end
 ```
 
-As mentioned/linked above, additional customization is supported via a debt.rb file which may define one or both of two methods DebtCeiling will call if defined when calculating debt for each module scanned (if it passes the whitelist/blacklist stage of filtering).
+As mentioned/linked above, additional customization is supported via a custom_debt.rb file which may define one or both of two methods DebtCeiling will call if defined when calculating debt for each module scanned (if it passes the whitelist/blacklist stage of filtering).
 
 As shown in example file, set a path for `extension_path` pointing to a file defining `DebtCeiling::CustomDebt` like the one in examples directory, and define its methods for your own additional calculation per file.
 
