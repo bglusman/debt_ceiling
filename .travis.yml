@@ -2,6 +2,7 @@ language: ruby
 rvm:
   - 1.9.3
   - jruby-19mode # JRuby in 1.9 mode
+  - jruby-9.0.0.0.rc1
   - 2.1.1
   - rbx-2.2
 addons:
