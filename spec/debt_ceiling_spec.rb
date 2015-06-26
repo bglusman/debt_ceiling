@@ -16,11 +16,19 @@ describe DebtCeiling do
     DebtCeiling.audit('.', preconfigured: true)
   end
 
-  it 'has failing exit status when max debt per modile is exceeded' do
+  it 'has failing exit status when max debt per module is exceeded' do
     DebtCeiling.configure {|c| c.max_debt_per_module =5 }
     expect(DebtCeiling.debt_ceiling).to eq(nil)
     expect_any_instance_of(DebtCeiling::Audit).to receive(:fail_test)
     DebtCeiling.audit('.', preconfigured: true)
+  end
+
+  it 'has no failing exit status when in warn only mode' do
+    DebtCeiling.configure {|c| c.max_debt_per_module =5 }
+    expect(DebtCeiling.debt_ceiling).to eq(nil)
+    expect_any_instance_of(DebtCeiling::Audit).to receive(:failed_condition?).at_least(:once).and_return(true)
+        expect_any_instance_of(DebtCeiling::Audit).not_to receive(:fail_test)
+    DebtCeiling.audit('.', preconfigured: true, warn_only: true)
   end
 
   it 'returns quantity of total debt' do

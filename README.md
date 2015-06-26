@@ -24,18 +24,21 @@ Current features include:
 * Running from a test suite to fail if debt ceiling is exceeded
 * Running from a test suite to fail if debt deadline is missed (currently only supports a single deadline, could add support for multiple targets if there's interest)
 
-To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_module` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit(root_dir)` from your test helper as an additional test, or drop the call and/or configuration directly in your spec helper:
+To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_module` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit` from your test helper as an additional test, or drop the call and/or configuration directly in your spec helper:
 ```ruby
+  require 'debt_ceiling'
   config.after(:all) do
     DebtCeiling.configure do |c|
       c.whitelist = %w(app lib)
       c.max_debt_per_module = 150
       c.debt_ceiling = 250
     end
-    DebtCeiling.audit('.', preconfigured: true)
+    DebtCeiling.audit(preconfigured: true)
   end
 ```
-  It will exit with a non-zero failure if you exceed your ceiling(s) or miss your target, failing the test suite.
+`audit` defaults to '.' as root directory, since specs are usually run from root, but you can pass it a relative path as an argument, i.e. `DebtCeiling.audit('./lib')`
+
+It will exit with a non-zero failure, failing the test suite, if you exceed your ceiling(s) or miss your target and print the failure and reason for failure.  If you wish debt ceiling to run and print the failures, but not fail the test suite when thresholds are exceeded or targets are missed, call the audit method with the `warn_only` option, i.e.: `DebtCeiling.audit(warn_only: true)`
 
 These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
