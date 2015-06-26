@@ -38,7 +38,7 @@ module DebtCeiling
   end
 
 
-  def audit(dir, opts= {})
+  def audit(dir='.', opts= {})
     Audit.new(dir, opts)
   end
 end

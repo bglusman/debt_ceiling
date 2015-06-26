@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/bglusman/debt_ceiling'
   s.summary     = 'DebtCeiling helps you track Tech Debt'
   s.rubyforge_project = 'debt_ceiling'
-  s.extensions = ['Rakefile']
 
   s.description = <<-DESC
     Get a grip on your technical debt
