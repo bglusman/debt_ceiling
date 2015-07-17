@@ -46,7 +46,7 @@ Additional customization is supported via two method hooks in the debt class, wh
 
 You can configure/customize the debt calculated using a few simple commands in a .debt_ceiling.rb file in the project's home directory:
 
-```
+```ruby
 DebtCeiling.configure do |c|
   #exceeding this will fail a test, if you run debt_ceiling binary/calculate method from test suite
   c.debt_ceiling = 250
