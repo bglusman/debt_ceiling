@@ -41,4 +41,23 @@ module DebtCeiling
   def audit(dir='.', opts= {})
     Audit.new(dir, opts)
   end
+
+  def dig(dir='.', opts={})
+    if rugged_available?
+      ArcheologicalDig.new(dir, opts)
+    else
+      fail "rugged gem not installed, dig feature relies on rugged and cmake"
+    end
+  end
+
+  def rugged_available?
+    return nil if java_platform? || `which cmake`.empty?
+    require 'rugged'
+    require_relative 'debt_ceiling/archeological_dig'
+    true
+  end
+
+  def java_platform?
+    ['jruby', 'java'].include?(RUBY_PLATFORM)
+  end
 end
