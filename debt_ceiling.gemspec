@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version     = DebtCeiling::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Brian Glusman']
-  s.email       = ['bglusman@shutterstock.com']
+  s.email       = ['bglusman@stridenyc.com']
   s.homepage    = 'https://github.com/bglusman/debt_ceiling'
   s.summary     = 'DebtCeiling helps you track Tech Debt'
   s.rubyforge_project = 'debt_ceiling'
