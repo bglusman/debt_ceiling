@@ -3,6 +3,7 @@ require 'digest/sha1'
 require 'json'
 module DebtCeiling
   class ArcheologicalDig
+    ARCHEOLOGY_RECORD_VERSION_NUMBER = "v0" #increment for backward incompatible changes in record format
     attr_reader :source_control, :records
     def initialize(path='.', opts={})
       @source_control =  SourceControlSystem::Base.create
@@ -21,6 +22,8 @@ module DebtCeiling
       end
     end
 
+    private
+
     def config_note_present_on_commit(commit)
       note = source_control.read_note_on(commit)
       note.match(config_string) if note
@@ -28,16 +31,17 @@ module DebtCeiling
     end
 
     def extract_record_from_note(note)
-      puts 'extracting'
-      'TODO'
+      note.split("\n").each_cons(2).each do |comment, json|
+        return JSON.parse(json) if comment.match(config_string)
+      end
     end
 
     def create_note_on_commit(result, commit)
-      source_control.add_note_to(commit, <<-DATA
-        debt_ceiling calculation id:#{config_string}
-        #{archeology_record(result, commit).to_json}"
-        DATA
-      )
+      note = <<-DATA
+            debt_ceiling calculation id:#{config_string}
+            #{archeology_record(result, commit).to_json.gsub('"','\"')}"
+            DATA
+      source_control.add_note_to(commit, note)
     end
 
     def archeology_record(result, commit)
@@ -54,6 +58,10 @@ module DebtCeiling
     end
 
     def config_string
+      @config_string ||= config_hash_string + ARCHEOLOGY_RECORD_VERSION_NUMBER
+    end
+
+    def config_hash_string
       Digest::SHA1.hexdigest(DebtCeiling.config_array.to_json)
     end
 

@@ -1,6 +1,6 @@
 module DebtCeiling
   module SourceControlSystem
-
+    require 'open3'
     class Git < Base
       register_system
 
@@ -17,11 +17,11 @@ module DebtCeiling
       end
 
       def revisions_refs(path)
-        `git log --follow --format=%h #{path.shellescape}`.split("\n")
+        popen3("git log --follow --format=%h #{path.shellescape}").split("\n")
       end
 
       def date_of_last_commit(path)
-        `git log -1 --date=iso --format=%ad #{path.shellescape}`.chomp!
+        popen3("git log -1 --date=iso --format=%ad #{path.shellescape}").chomp!
       end
 
       def revision?
@@ -29,24 +29,24 @@ module DebtCeiling
       end
 
       def head_reference
-        `git rev-parse --verify HEAD`.chomp!
+        popen3("git rev-parse --verify HEAD").chomp
       end
 
       def add_note_to(ref, message)
-        `git notes append #{ref} -m "#{message}"`
+        popen3(%Q(git notes append #{ref} -m "#{message}"))
       end
 
       def read_note_on(ref)
-        note = `git notes show #{ref}`
-        note unless note.empty?
+        popen3("git notes show #{ref}")
       end
 
       def travel_to_commit(ref)
         stash_successful = stash_changes
-        `git checkout #{ref}`
+        current_branch = popen3("git symbolic-ref HEAD").chomp.split('/').last
+        popen3("git checkout #{ref}")
         yield
       ensure
-        `git checkout #{head_reference}`
+        popen3("git checkout #{current_branch}")
         travel_to_original_state if stash_successful
       end
 
@@ -61,19 +61,24 @@ module DebtCeiling
 
       def stash_changes
         stashes_count_before = stashes_count
-        `git stash`
+        popen3("git stash")
         stashes_count_after = stashes_count
         stashes_count_after > stashes_count_before
       end
 
       def stashes_count
-        `git stash list --format=%h`.count("\n")
+        popen3("git stash list --format=%h").count("\n")
       end
 
       def travel_to_original_state
-        `git stash pop`
+        popen3("git stash pop")
+      end
+
+      def popen3(cmd)
+        Open3.popen3(cmd) do |_,stdout,error|
+          stdout.read if error.read.empty?
+        end
       end
     end
-
   end
 end
