@@ -15,7 +15,7 @@ module DebtCeiling
           result = nil
           source_control.travel_to_commit(commit) do
             result = Audit.new(path, opts.merge(skip_report: true, warn_only: true, preconfigured: true))
-            create_note_on_commit(result, commit)
+            create_note_on_commit(result, commit) if DebtCeiling.memoize_records_in_repo
           end
           archeology_record(result, commit)
         end

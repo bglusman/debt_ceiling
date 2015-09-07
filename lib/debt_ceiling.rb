@@ -35,7 +35,8 @@ module DebtCeiling
     :ideal_max_line_count,
     :cost_per_line_over_ideal,
     :debt_types,
-    :archeology_detail
+    :archeology_detail,
+    :memoize_records_in_repo
   ]
   CONFIG_FILE_NAME = ".debt_ceiling.rb"
   CONFIG_LOCATIONS = ["#{Dir.pwd}/#{CONFIG_FILE_NAME}", "#{Dir.home}/#{CONFIG_FILE_NAME}"]
@@ -59,6 +60,7 @@ module DebtCeiling
     config.cost_per_line_over_ideal = 1
     config.debt_types               = [CustomDebt, StaticAnalysisDebt]
     config.archeology_detail        = :low
+    config.memoize_records_in_repo  = true #is this OK as a default? effects repo
   end
 
 
