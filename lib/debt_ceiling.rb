@@ -1,5 +1,6 @@
 require 'configurations'
 require 'chronic'
+require 'sparkr'
 require 'rubycritic'
 require 'rubycritic/cli/application'
 require 'ostruct'
@@ -69,7 +70,9 @@ module DebtCeiling
   end
 
   def dig(dir='.', opts={})
-    ArcheologicalDig.new(dir, opts)
+    dig = ArcheologicalDig.new(dir, opts)
+    puts Sparkr.sparkline(dig.records.map {|r| r['debt'] })
+    dig
   end
 
   def load_configuration
