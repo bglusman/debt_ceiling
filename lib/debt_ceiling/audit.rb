@@ -21,7 +21,7 @@ module DebtCeiling
       @dir        = dir
       @accounting = perform_accounting
       accounting.print_results unless opts[:skip_report]
-      puts failure_message
+      puts failure_message unless opts[:silent]
       fail_test if failed_condition? && !opts[:warn_only]
     end
 
