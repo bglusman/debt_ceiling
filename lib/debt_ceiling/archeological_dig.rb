@@ -4,8 +4,9 @@ require 'json'
 module DebtCeiling
   class ArcheologicalDig
     ARCHEOLOGY_RECORD_VERSION_NUMBER = "v0" #increment for backward incompatible changes in record format
-    attr_reader :source_control, :records
+    attr_reader :source_control, :records, :redis
     def initialize(path='.', opts={})
+      @redis = redis_if_available
       @source_control =  SourceControlSystem::Base.create
       DebtCeiling.load_configuration unless opts[:preconfigured]
       @records = source_control.revisions_refs(path).map do |commit|
@@ -14,7 +15,13 @@ module DebtCeiling
         else
           result = nil
           source_control.travel_to_commit(commit) do
-            result = Audit.new(path, opts.merge(skip_report: true, warn_only: true, preconfigured: true))
+            result = Audit.new(path,
+                               opts.merge(skip_report: true,
+                                         warn_only: true,
+                                         preconfigured: true,
+                                         silent: true
+                                         )
+                              )
             create_note_on_commit(result, commit) if DebtCeiling.memoize_records_in_repo
           end
           archeology_record(result, commit)
@@ -24,10 +31,26 @@ module DebtCeiling
 
     private
 
+    def redis_if_available
+      require 'redis'
+      host = ENV['REDIS_HOST'] || 'localhost'
+      port = ENV['REDIS_PORT'] ? ENV['REDIS_PORT'].to_i : 6379
+      Redis.new(host: host, port: port)
+      rescue LoadError
+    end
+
+    def read_note_on(commit)
+      if redis
+        redis.get(commit_identifier(commit))
+      else
+        source_control.read_note_on(commit)
+      end
+    end
+
     def config_note_present_on_commit(commit)
-      note = source_control.read_note_on(commit)
-      note.match(config_string) if note
-      note
+      note = read_note_on(commit)
+      matched = !!note.match(commit_identifier(commit)) if note
+      note if matched
     end
 
     def extract_record_from_note(note)
@@ -38,10 +61,24 @@ module DebtCeiling
 
     def create_note_on_commit(result, commit)
       note = <<-DATA
-            debt_ceiling calculation id:#{config_string}
-            #{archeology_record(result, commit).to_json.gsub('"','\"')}"
+            #{commit_identifier(commit)}
+            #{archeology_record_json(result, commit)}
             DATA
-      source_control.add_note_to(commit, note)
+      if redis
+        redis.set(commit_identifier(commit), note)
+      else
+        source_control.add_note_to(commit, note)
+      end
+    end
+
+    def commit_identifier(commit)
+      "debt_ceiling_#{commit}_#{config_string}"
+    end
+
+    def archeology_record_json(result, commit)
+      json = "#{archeology_record(result, commit).to_json}"
+      json.gsub!('"','\"') unless redis
+      json
     end
 
     def archeology_record(result, commit)
