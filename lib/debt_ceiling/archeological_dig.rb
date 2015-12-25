@@ -4,32 +4,45 @@ require 'json'
 module DebtCeiling
   class ArcheologicalDig
     ARCHEOLOGY_RECORD_VERSION_NUMBER = "v0" #increment for backward incompatible changes in record format
-    attr_reader :source_control, :records, :redis
+    attr_reader :source_control, :records, :redis, :path, :opts
+
+    def self.dig_json_key(path)
+      project_name = File.expand_path(path).split('/').last
+      "DebtCeiling_#{project_name}_#{ARCHEOLOGY_RECORD_VERSION_NUMBER}"
+    end
+
     def initialize(path='.', opts={})
       @redis = redis_if_available
+      @path = path
+      @opts = opts
       @source_control =  SourceControlSystem::Base.create
       DebtCeiling.load_configuration unless opts[:preconfigured]
       @records = source_control.revisions_refs(path).map do |commit|
         if note = config_note_present_on_commit(commit)
           extract_record_from_note(note)
         else
-          result = nil
-          source_control.travel_to_commit(commit) do
-            result = Audit.new(path,
-                               opts.merge(skip_report: true,
-                                         warn_only: true,
-                                         preconfigured: true,
-                                         silent: true
-                                         )
-                              )
-            create_note_on_commit(result, commit) if DebtCeiling.memoize_records_in_repo
-          end
-          archeology_record(result, commit)
+          build_record(commit)
         end
       end
+      redis.set(self.class.dig_json_key(path), records.to_json) if redis
     end
 
     private
+
+    def build_record(commit)
+      result = nil
+      source_control.travel_to_commit(commit) do
+        result = Audit.new(path,
+                           opts.merge(skip_report: true,
+                                     warn_only: true,
+                                     preconfigured: true,
+                                     silent: true
+                                     )
+                          )
+        create_note_on_commit(result, commit) if DebtCeiling.memoize_records_in_repo
+      end
+      archeology_record(result, commit)
+    end
 
     def redis_if_available
       require 'redis'
