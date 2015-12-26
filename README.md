@@ -27,6 +27,9 @@ Current features include:
   * Calculates total debt and pass/fail state for the state of the code at each commit.
   * It will print this out as a sparkline command line graph, which is basically useless and just for kicks
   * Store the entire result in Redis (if available), or return the results as a `DebtCeiling::ArcheologicalDig` object if called via `DebtCeiling.dig(path)`, which has an array of hashes available via `#results` method representing the individual commit results at the specified level of detail per commit.
+  * Plans to visualize this history
+  * Memoizes each commit's calculation, either to Redis if Redis gem is installed (specify host and port via `ENV['REDIS_HOST']` and `ENV['REDIS_PORT']` or uses defaults of localhost and 6379) or by creating git notes associated with each commit if not.  Also supports Mercurial in theory, but haven't tested it, and requires Redis for Mercurial since no git notes option there.
+  * Run the historical analysis for a repository with `debt_ceiling dig`, defaulting to current directory.
 
 To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_module` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit` from your test helper as an additional test, or drop the call and/or configuration directly in your spec helper:
 ```ruby
