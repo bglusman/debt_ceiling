@@ -28,7 +28,7 @@ describe DebtCeiling::ArcheologicalDig do
       allow(fake_source_control).to receive(:add_note_to)
     end
     it 'adds debt for todos with specified value' do
-      dig = DebtCeiling::ArcheologicalDig.new('')
+      dig = DebtCeiling::ArcheologicalDig.new('').process
       expect(dig.records).to include(
         debt: total_debt, failed: failed_condition, commit: COMMIT_SHA
         )

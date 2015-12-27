@@ -70,7 +70,7 @@ module DebtCeiling
   end
 
   def dig(dir='.', opts={})
-    dig = ArcheologicalDig.new(dir, opts)
+    dig = ArcheologicalDig.new(dir, opts).process
     puts Sparkr.sparkline(dig.records.map {|r| r['debt'] })
     dig
   end

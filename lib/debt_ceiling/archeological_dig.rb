@@ -17,6 +17,9 @@ module DebtCeiling
       @path = path
       @opts = opts
       @source_control =  SourceControlSystem::Base.create
+    end
+
+    def process
       DebtCeiling.load_configuration unless opts[:preconfigured]
       @records = source_control.revisions_refs(path).map do |commit|
         if record = cache.get(commit)
@@ -26,6 +29,7 @@ module DebtCeiling
         end
       end
       cache.set(self.class.dig_json_key(path), records.to_json) if opts[:store_results]
+      self
     end
 
     private
