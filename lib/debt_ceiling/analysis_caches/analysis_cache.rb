@@ -22,7 +22,11 @@ module DebtCeiling
 
     def get(commit)
       text = adapter.get(self.class.commit_identifier(commit))
-      extract_record_from_text(text) if text
+      if text
+        extract_record_from_text(text)
+      else
+        yield if block_given?
+      end
     end
 
     def set(commit, result)
