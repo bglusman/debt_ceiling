@@ -21,16 +21,18 @@ module DebtCeiling
 
     def process
       DebtCeiling.load_configuration unless opts[:preconfigured]
-      @records = source_control.revisions_refs(path)
-        .map {|commit| cache.get(commit) { build_record(commit) } }
+      @records = source_control.revisions_refs(path).map {|commit| process_commit(commit) }
       cache.set(self.class.dig_json_key(path), records.to_json) if opts[:store_results]
       self
     end
 
     private
 
-    def build_record(commit)
-      result = nil
+    def process_commit(commit)
+      cache.get(commit) { audit_commit(commit) }
+    end
+
+    def audit_commit(commit)
       source_control.travel_to_commit(commit) do
         result = Audit.new(path,
                            opts.merge(skip_report: true,
@@ -41,8 +43,8 @@ module DebtCeiling
                           )
         record = archeology_record(result, commit)
         cache.set(commit, record) if DebtCeiling.memoize_records_in_repo
+        record
       end
-      archeology_record(result, commit)
     end
 
     def archeology_record(result, commit)
