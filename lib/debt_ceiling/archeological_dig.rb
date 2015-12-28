@@ -62,7 +62,7 @@ module DebtCeiling
     end
 
     def default_record(result, commit)
-      {debt: result.total_debt, failed: !!result.failed_condition?, commit: commit}
+      {'debt' => result.total_debt, 'failed' => !!result.failed_condition?, 'commit' => commit}
     end
 
   end
