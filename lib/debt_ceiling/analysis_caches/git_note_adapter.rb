@@ -19,7 +19,7 @@ module DebtCeiling
     private
 
     def actual_commit(key)
-      key.split('_')[2]
+      key.split('_')[2] #for now we sanitize underscores into dashes in project name
     end
 
     def read_note_on(commit)
