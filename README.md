@@ -8,9 +8,12 @@
 
 Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite.  Eventually perhaps will aid in visualizing this quantification as a graph or graphs, and breaking down debt into various categories and sources.  Currently it highlights the single largest source of debt as a suggestion for reduction, as well out outputting the total quantity, both in test suite integration or by manually running `debt_ceiling` binary.
 
+## Compatibility
+
 Travis tests are running on 1.9.3, 2.1.1, 2.2.2, 2.3.0, Rubinius 2.8 and JRuby 1.9 mode.
 
-Current features include:
+## Current Features
+
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file
 * configuring multipliers for specific static analysis attributes, including complexity, duplication, method count, reek smells
 * configuring ideal max lines per file/module, and a per line penalty for each additional line
@@ -31,6 +34,8 @@ Current features include:
   * Memoizes each commit's calculation, either to Redis if Redis gem is installed (specify host and port via `ENV['REDIS_HOST']` and `ENV['REDIS_PORT']` or uses defaults of localhost and 6379) or by creating git notes associated with each commit if not.  Also supports Mercurial in theory, but haven't tested it, and requires Redis for Mercurial since no git notes option there.
   * Run the historical analysis for a repository with `debt_ceiling dig`, defaulting to current directory.
 
+## Usage
+
 To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_module` and/or `reduction_target` and `reduction_date` in your configuration and call `DebtCeiling.audit` from your test helper as an additional test, or drop the call and/or configuration directly in your spec helper:
 ```ruby
   require 'debt_ceiling'
@@ -46,6 +51,8 @@ To integrate in a test suite, set a value for `debt_ceiling`, `max_debt_per_modu
 `audit` defaults to '.' as root directory, since specs are usually run from root, but you can pass it a relative path as an argument, i.e. `DebtCeiling.audit('./lib')`
 
 It will exit with a non-zero failure, failing the test suite, if you exceed your ceiling(s) or miss your target and print the failure and reason for failure.  If you wish debt ceiling to run and print the failures, but not fail the test suite when thresholds are exceeded or targets are missed, call the audit method with the `warn_only` option, i.e.: `DebtCeiling.audit(warn_only: true)`
+
+## Example
 
 These features are largely demonstrated/discussed in [examples/.debt_ceiling.rb.example](https://github.com/bglusman/debt_ceiling/blob/master/examples/.debt_ceiling.rb.example) or below snippet which demonstrates configuring debt ceiling around a team or maintainer's agreed ideas about how to quantify debt automatically and/or manually in the project source code.
 
