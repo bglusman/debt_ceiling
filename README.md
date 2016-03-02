@@ -4,6 +4,7 @@
 [![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling)
 [![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling)
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
+[![codebeat](https://codebeat.co/badges/1ff15cfe-34ab-4ab5-a84f-cc065a19af1d)](https://codebeat.co/projects/www-github-com-bglusman-debt_ceiling)
 #DebtCeiling
 
 Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite.  Eventually perhaps will aid in visualizing this quantification as a graph or graphs, and breaking down debt into various categories and sources.  Currently it highlights the single largest source of debt as a suggestion for reduction, as well out outputting the total quantity, both in test suite integration or by manually running `debt_ceiling` binary.
