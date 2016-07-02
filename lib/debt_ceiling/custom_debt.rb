@@ -2,7 +2,7 @@ module DebtCeiling
   class CustomDebt
     extend Forwardable
     include CommonMethods
-
+    DEFAULT_TODO_TEXT = 'TODO'
     def_delegators :configuration,
                    :deprecated_reference_pairs, :manual_callouts, :cost_per_todo
 
@@ -34,7 +34,7 @@ module DebtCeiling
 
     def debt_from_source_code_rules
       manual_callout_debt +
-      text_match_debt('TODO', cost_per_todo) +
+      text_match_debt(DEFAULT_TODO_TEXT, cost_per_todo) +
       deprecated_reference_debt
     end
 

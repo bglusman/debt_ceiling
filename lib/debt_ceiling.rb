@@ -39,6 +39,7 @@ module DebtCeiling
     :archeology_detail,
     :memoize_records_in_repo
   ]
+  DEFAULT_CALLOUTS = ['TECH DEBT']
   CONFIG_FILE_NAME = ".debt_ceiling.rb"
   CONFIG_LOCATIONS = ["#{Dir.pwd}/#{CONFIG_FILE_NAME}", "#{Dir.home}/#{CONFIG_FILE_NAME}"]
   NO_CONFIG_FOUND  = "No #{CONFIG_FILE_NAME} configuration file detected in #{Dir.pwd} or ~/, using defaults"
@@ -51,7 +52,7 @@ module DebtCeiling
     config.blacklist = []
     config.whitelist = []
     config.deprecated_reference_pairs = {}
-    config.manual_callouts = ['TECH DEBT']
+    config.manual_callouts = [*DEFAULT_CALLOUTS]
     config.grade_points = { a: 0, b: 3, c: 13, d: 55, f: 144 }
     config.complexity_multiplier    = 0.5
     config.method_count_multiplier  = 0.5
