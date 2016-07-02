@@ -30,7 +30,7 @@ describe DebtCeiling::ArcheologicalDig do
     it 'adds debt for todos with specified value' do
       dig = DebtCeiling::ArcheologicalDig.new('').process
       expect(dig.records).to include(
-        debt: total_debt, failed: failed_condition, commit: COMMIT_SHA
+        "debt" => total_debt, "failed" => failed_condition, "commit" => COMMIT_SHA
         )
     end
   end
