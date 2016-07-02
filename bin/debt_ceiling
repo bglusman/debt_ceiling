@@ -2,6 +2,8 @@
 require_relative '../lib/debt_ceiling'
 if ARGV[0] == 'dig'
   DebtCeiling.dig(ARGV[1] ? ARGV[1] : '.')
+elsif ARGV[0] == 'todo'
+  DebtCeiling.todo(ARGV[1] ? ARGV[1] : '.')
 else
   DebtCeiling.audit(ARGV[0] ? ARGV[0] : '.')
 end

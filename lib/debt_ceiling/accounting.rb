@@ -34,6 +34,10 @@ module DebtCeiling
       debts.max_by(&:to_i)
     end
 
+    def report_text
+      debts.map(&:custom_debt).compact.map(&:report_text)
+    end
+
     def get_total_debt
       debts.map(&:to_i).reduce(:+)
     end

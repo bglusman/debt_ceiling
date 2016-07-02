@@ -8,6 +8,7 @@ require 'forwardable'
 require_relative 'debt_ceiling/common_methods'
 require_relative 'debt_ceiling/audit'
 require_relative 'debt_ceiling/accounting'
+require_relative 'debt_ceiling/todo'
 require_relative 'debt_ceiling/custom_debt'
 require_relative 'debt_ceiling/static_analysis_debt'
 require_relative 'debt_ceiling/debt'
@@ -37,6 +38,7 @@ module DebtCeiling
     :cost_per_line_over_ideal,
     :debt_types,
     :archeology_detail,
+    :report_todos,
     :memoize_records_in_repo
   ]
   DEFAULT_CALLOUTS = ['TECH DEBT']
@@ -62,13 +64,17 @@ module DebtCeiling
     config.cost_per_line_over_ideal = 1
     config.debt_types               = [CustomDebt, StaticAnalysisDebt]
     config.archeology_detail        = :low
-    config.report_todos             = true
+    config.report_todos             = true # when running regular debt test, always shows for debt_ceiling todo
     config.memoize_records_in_repo  = false # set to true to use git notes to save archaeological dig results
   end
 
 
   def audit(dir='.', opts= {})
     Audit.new(dir, opts)
+  end
+
+  def todo(dir='.', opts= {})
+    puts Todo.new(dir, opts).find_todos
   end
 
   def dig(dir='.', opts={})

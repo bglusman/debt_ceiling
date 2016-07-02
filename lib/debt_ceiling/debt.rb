@@ -15,7 +15,7 @@ module DebtCeiling
     def initialize(file_attributes)
       @file_attributes  = file_attributes
       if valid_debt?
-        debt_components = configuration.debt_types.map {|type| type.new(file_attributes) }
+        @debt_components = configuration.debt_types.map {|type| type.new(file_attributes) }
         @debt_amount    = debt_components.reduce(&:+)
       end
     end
@@ -28,9 +28,13 @@ module DebtCeiling
       rating.to_s.downcase.to_sym
     end
 
+    def custom_debt
+      (debt_components || []).find {|component| component.class == CustomDebt }
+    end
+
     private
 
-    attr_reader :file_attributes, :debt_amount
+    attr_reader :file_attributes, :debt_amount, :debt_components
 
     def internal_measure_debt
       debt_types.reduce(&:+)

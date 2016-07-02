@@ -11,9 +11,12 @@ module DebtCeiling
     def_delegator  :debt_amount, :to_i
 
     def initialize(file_attributes)
+      @report_text      = []
       @file_attributes  = file_attributes
       @debt_amount      = default_measure_debt
     end
+
+    attr_reader :report_text
 
     private
 
@@ -39,6 +42,7 @@ module DebtCeiling
     end
 
     def text_match_debt(string, cost)
+      report_text << source_code.split("\n").select {|s| s.scan(string).any? }
       source_code.scan(string).count * cost.to_i
     end
 
@@ -57,7 +61,10 @@ module DebtCeiling
       source_code.each_line.reduce(0) do |sum, line|
         match_data = line.match(Regexp.new(callout + '.*'))
         string = match_data.to_s.split(callout).last
-        amount = string.match(/\d+/).to_s if string
+        if string
+          report_text << string
+          amount = string.match(/\d+/).to_s
+        end
         sum + amount.to_i
       end
     end
