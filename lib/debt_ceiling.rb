@@ -61,7 +61,8 @@ module DebtCeiling
     config.cost_per_line_over_ideal = 1
     config.debt_types               = [CustomDebt, StaticAnalysisDebt]
     config.archeology_detail        = :low
-    config.memoize_records_in_repo  = true #is this OK as a default? effects repo
+    config.report_todos             = true
+    config.memoize_records_in_repo  = false # set to true to use git notes to save archaeological dig results
   end
 
 
