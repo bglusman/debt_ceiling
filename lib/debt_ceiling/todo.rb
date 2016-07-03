@@ -1,5 +1,5 @@
 module DebtCeiling
-  class Todo  # maybe?
+  class Todo
     attr_reader :accounting, :dir, :loaded
     def initialize(dir = '.', opts = {})
       @loaded     = opts[:preconfigured]

@@ -20,7 +20,7 @@ module DebtCeiling
       @loaded     = opts[:preconfigured]
       @dir        = dir
       @accounting = perform_accounting
-      @todos      = find_todos if configuration.report_todos && debt_types.include?(CustomDebt)
+      @todos      = find_todos if report_todos && debt_types.include?(CustomDebt)
       accounting.print_results unless opts[:skip_report]
       puts failure_message unless opts[:silent]
       puts @todos if report_todos
