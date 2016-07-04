@@ -50,8 +50,8 @@ module DebtCeiling
 
     def find_author_date(line)
       blame = `git blame #{path} -L #{line}`.split("\n").first
-      blame =~ /.* \((?<author>[^\d]+) (?<date>.+)\)/
-      [$1, DateTime.parse($2)]
+      /.* \((?<author>[^\d]+) (?<date>.+)\)/ =~ blame
+      [author, DateTime.parse(date)]
     rescue StandardError
       # TODO : also support mercurial ideally
       ["author:requiresGit", "date:requiresGit"]
