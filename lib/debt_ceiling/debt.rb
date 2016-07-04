@@ -5,10 +5,11 @@ module DebtCeiling
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes,
-                   :path, :analysed_module, :module_name, :linecount, :source_code
+                   :path, :module_name, :linecount, :source_code
     def_delegators :configuration,
                   :whitelist, :blacklist
 
+    def_delegator :static_analysis_debt, :analysed_module
     def_delegator :analysed_module, :rating
     def_delegator :debt_amount, :to_i
 
@@ -21,11 +22,15 @@ module DebtCeiling
     end
 
     def name
-      analysed_module.name || path.to_s.split('/').last
+      (analysed_module && analysed_module.name) || path.to_s.split('/').last
     end
 
     def letter_grade
       rating.to_s.downcase.to_sym
+    end
+
+    def static_analysis_debt
+      (debt_components || []).find {|component| component.class == StaticAnalysisDebt }
     end
 
     def custom_debt

@@ -45,11 +45,7 @@ module DebtCeiling
   CONFIG_FILE_NAME = ".debt_ceiling.rb"
   CONFIG_LOCATIONS = ["#{Dir.pwd}/#{CONFIG_FILE_NAME}", "#{Dir.home}/#{CONFIG_FILE_NAME}"]
   NO_CONFIG_FOUND  = "No #{CONFIG_FILE_NAME} configuration file detected in #{Dir.pwd} or ~/, using defaults"
-
-  def_delegators  :configuration, *CONFIGURATION_OPTIONS
-
-
-  configuration_defaults do |config|
+  DEFAULTS_PROC    = ->(config) {
     config.extension_path = "#{Dir.pwd}/custom_debt.rb"
     config.blacklist = []
     config.whitelist = []
@@ -66,18 +62,26 @@ module DebtCeiling
     config.archeology_detail        = :low
     config.report_todos             = true # when running regular debt test, always shows for debt_ceiling todo
     config.memoize_records_in_repo  = false # set to true to use git notes to save archaeological dig results
-  end
+  }
+
+  def_delegators  :configuration, *CONFIGURATION_OPTIONS
 
 
   def audit(dir='.', opts= {})
+    configuration_defaults {|config| DEFAULTS_PROC.(config) }
     Audit.new(dir, opts)
   end
 
   def todo(dir='.', opts= {})
+    configuration_defaults do |config|
+      DEFAULTS_PROC.(config)
+      config.debt_types = [CustomDebt]
+    end
     puts Todo.new(dir, opts).find_todos
   end
 
   def dig(dir='.', opts={})
+    configuration_defaults {|config| DEFAULTS_PROC.(config) }
     dig = ArcheologicalDig.new(dir, opts).process
     puts Sparkr.sparkline(dig.records.map {|r| r['debt'] })
     dig
