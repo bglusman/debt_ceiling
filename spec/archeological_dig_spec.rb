@@ -10,7 +10,9 @@ describe DebtCeiling::ArcheologicalDig do
 
   let(:fake_source_control) { double(DebtCeiling::SourceControlSystem::Git) }
   let(:fake_audit) { double(DebtCeiling::Audit) }
+  let(:fake_accounting) { double(DebtCeiling::Accounting) }
   let(:total_debt) { 100 }
+  let(:max_debt) { 10 }
   let(:failed_condition) { false }
   before do
     allow(DebtCeiling::SourceControlSystem::Git).to receive(:new).and_return(fake_source_control)
@@ -18,7 +20,9 @@ describe DebtCeiling::ArcheologicalDig do
     allow(fake_source_control).to receive(:travel_to_commit).with(COMMIT_SHA).and_yield
     allow(DebtCeiling::Audit).to receive(:new).and_return(fake_audit)
     allow(fake_audit).to receive(:total_debt).and_return(total_debt)
+    allow(fake_audit).to receive(:accounting).and_return(fake_accounting)
     allow(fake_audit).to receive(:failed_condition?).and_return(failed_condition)
+    allow(fake_accounting).to receive(:max_debt).and_return(max_debt)
   end
 
 
@@ -31,7 +35,10 @@ describe DebtCeiling::ArcheologicalDig do
     it 'adds debt for todos with specified value' do
       dig = DebtCeiling::ArcheologicalDig.new('').process
       expect(dig.records.map(&:stringify_keys)).to include(
-        "debt" => total_debt, "failed" => failed_condition, "commit" => COMMIT_SHA
+        "debt" => total_debt,
+        "max_debt" => max_debt,
+        "failed" => failed_condition,
+        "commit" => COMMIT_SHA
         )
     end
   end
