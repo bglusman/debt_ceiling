@@ -81,7 +81,10 @@ module DebtCeiling
   end
 
   def dig(dir='.', opts={})
-    configuration_defaults {|config| DEFAULTS_PROC.(config) }
+    configuration_defaults do |config|
+      DEFAULTS_PROC.(config)
+      config.report_todos = false
+    end
     dig = ArcheologicalDig.new(dir, opts).process
     puts Sparkr.sparkline(dig.records.map {|r| r['debt'] })
     dig
