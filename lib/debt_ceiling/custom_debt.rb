@@ -6,8 +6,7 @@ module DebtCeiling
     def_delegators :configuration,
                    :deprecated_reference_pairs, :manual_callouts, :cost_per_todo
 
-    def_delegator :file_attributes, :source_code
-
+    def_delegators :file_attributes, :source_code, :path
     def_delegator  :debt_amount, :to_i
 
     def initialize(file_attributes)
@@ -19,7 +18,7 @@ module DebtCeiling
 
     def todo_report
       prepare_report
-      { file_attributes.path => report_text } if report_text.any?
+      { path => report_text } if report_text.any?
     end
 
     private
@@ -40,8 +39,22 @@ module DebtCeiling
 
     def prepare_report
       source_code.each_line.each_with_index do |line, index|
-        report_text[index + 1] = line if matching_strings.any? {|s| line.match(Regexp.escape(s))}
+        add_line(line, index + 1) if matching_strings.any? {|s| line.match(Regexp.escape(s))}
       end
+    end
+
+    def add_line(line, index)
+      author, date = find_author_date(index)
+      report_text[index] = [line, author, date]
+    end
+
+    def find_author_date(line)
+      blame = `git blame #{path} -L #{line}`.split("\n").first
+      blame =~ /.* \((?<author>[^\d]+) (?<date>.+)\)/
+      [$1, DateTime.parse($2)]
+    rescue StandardError
+      # TODO : also support mercurial ideally
+      ["author:requiresGit", "date:requiresGit"]
     end
 
     def report_matches(string)
