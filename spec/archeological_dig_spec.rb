@@ -39,7 +39,7 @@ end
 
 class Hash
   def stringify_keys
-    map {|k, v| [k.to_s, v] }.to_h
+    Hash[map {|k, v| [k.to_s, v] }]
   end
 end
 
