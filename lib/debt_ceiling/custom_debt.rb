@@ -39,7 +39,7 @@ module DebtCeiling
 
     def prepare_report
       source_code.each_line.each_with_index do |line, index|
-        add_line(line, index + 1) if matching_strings.any? {|s| line.match(Regexp.escape(s))}
+        add_line(line, index + 1) if matching_strings.any? {|report_string| line.match(Regexp.escape(report_string))}
       end
     end
 
@@ -68,7 +68,7 @@ module DebtCeiling
     end
 
     def text_match_debt(string, cost)
-      matches = source_code.split("\n").select {|s| s.scan(string) }
+      matches = source_code.split("\n").select {|code_line| code_line.scan(string) }
       report_matches(string) if matches.any?
       source_code.scan(string).count * cost.to_i # should be able to do matches.count * cost maybe? fails spec though
     end
