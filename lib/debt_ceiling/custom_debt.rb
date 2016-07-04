@@ -11,16 +11,20 @@ module DebtCeiling
     def_delegator  :debt_amount, :to_i
 
     def initialize(file_attributes)
-      @report_text      = []
+      @report_text      = {}
+      @matching_strings = []
       @file_attributes  = file_attributes
       @debt_amount      = default_measure_debt
     end
 
-    attr_reader :report_text
+    def todo_report
+      prepare_report
+      { file_attributes.path => report_text } if report_text.any?
+    end
 
     private
 
-    attr_reader :file_attributes, :debt_amount
+    attr_reader :file_attributes, :debt_amount, :report_text, :matching_strings
 
     def external_measure_debt
       public_send(:measure_debt) if self.respond_to?(:measure_debt)
@@ -34,6 +38,15 @@ module DebtCeiling
       (public_send(:augment_debt) if respond_to?(:augment_debt)).to_i
     end
 
+    def prepare_report
+      source_code.each_line.each_with_index do |line, index|
+        report_text[index + 1] = line if matching_strings.any? {|s| line.match(Regexp.escape(s))}
+      end
+    end
+
+    def report_matches(string)
+      matching_strings << string
+    end
 
     def debt_from_source_code_rules
       manual_callout_debt +
@@ -42,8 +55,9 @@ module DebtCeiling
     end
 
     def text_match_debt(string, cost)
-      report_text << source_code.split("\n").select {|s| s.scan(string).any? }
-      source_code.scan(string).count * cost.to_i
+      matches = source_code.split("\n").select {|s| s.scan(string) }
+      report_matches(string) if matches.any?
+      source_code.scan(string).count * cost.to_i # should be able to do matches.count * cost maybe? fails spec though
     end
 
     def manual_callout_debt
@@ -62,7 +76,7 @@ module DebtCeiling
         match_data = line.match(Regexp.new(callout + '.*'))
         string = match_data.to_s.split(callout).last
         if string
-          report_text << string
+          report_matches(string)
           amount = string.match(/\d+/).to_s
         end
         sum + amount.to_i

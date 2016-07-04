@@ -35,7 +35,7 @@ module DebtCeiling
     end
 
     def report_text
-      debts.map(&:custom_debt).compact.map(&:report_text)
+      Todo.output(debts)
     end
 
     def get_total_debt
