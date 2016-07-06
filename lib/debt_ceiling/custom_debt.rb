@@ -44,8 +44,12 @@ module DebtCeiling
     end
 
     def add_line(line, index)
-      author, date = find_author_date(index)
-      report_text[index] = [line, author, date]
+      if DebtCeiling.todo_author_date_info
+        author, date = find_author_date(index)
+        report_text[index] = [line, author, date]
+      else
+        report_text[index] = line
+      end
     end
 
     def find_author_date(line)

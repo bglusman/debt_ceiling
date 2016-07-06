@@ -39,6 +39,7 @@ module DebtCeiling
     :debt_types,
     :archeology_detail,
     :report_todos,
+    :todo_author_date_info,
     :memoize_records_in_repo
   ]
   DEFAULT_CALLOUTS = ['TECH DEBT']
@@ -61,6 +62,7 @@ module DebtCeiling
     config.debt_types               = [CustomDebt, StaticAnalysisDebt]
     config.archeology_detail        = :low
     config.report_todos             = true # when running regular debt test, always shows for debt_ceiling todo
+    config.todo_author_date_info    = details?
     config.memoize_records_in_repo  = false # set to true to use git notes to save archaeological dig results
   }
 
@@ -103,6 +105,10 @@ module DebtCeiling
 
   def config_array
     CONFIGURATION_OPTIONS.map {|option| public_send(option) }
+  end
+
+  def self.details?
+    [ARGV[0], ARGV[1], ARGV[2]].any? {|arg| arg.to_s.match '--details'}
   end
 
 end
