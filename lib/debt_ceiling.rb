@@ -79,6 +79,7 @@ module DebtCeiling
       DEFAULTS_PROC.(config)
       config.debt_types = [CustomDebt]
     end
+    DebtCeiling.load_configuration
     puts Todo.new(dir, opts).find_todos
   end
 
