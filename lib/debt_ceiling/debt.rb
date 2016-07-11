@@ -5,32 +5,41 @@ module DebtCeiling
     DoNotWhitelistAndBlacklistSimulateneously = Class.new(StandardError)
 
     def_delegators :file_attributes,
-                   :path, :analysed_module, :module_name, :linecount, :source_code
+                   :path, :module_name, :linecount, :source_code
     def_delegators :configuration,
                   :whitelist, :blacklist
 
+    def_delegator :static_analysis_debt, :analysed_module
     def_delegator :analysed_module, :rating
     def_delegator :debt_amount, :to_i
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
       if valid_debt?
-        debt_components = configuration.debt_types.map {|type| type.new(file_attributes) }
+        @debt_components = configuration.debt_types.map {|type| type.new(file_attributes) }
         @debt_amount    = debt_components.reduce(&:+)
       end
     end
 
     def name
-      analysed_module.name || path.to_s.split('/').last
+      (analysed_module && analysed_module.name) || path.to_s.split('/').last
     end
 
     def letter_grade
       rating.to_s.downcase.to_sym
     end
 
+    def static_analysis_debt
+      (debt_components || []).find {|component| component.class == StaticAnalysisDebt }
+    end
+
+    def custom_debt
+      (debt_components || []).find {|component| component.class == CustomDebt }
+    end
+
     private
 
-    attr_reader :file_attributes, :debt_amount
+    attr_reader :file_attributes, :debt_amount, :debt_components
 
     def internal_measure_debt
       debt_types.reduce(&:+)

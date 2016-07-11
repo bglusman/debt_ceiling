@@ -7,17 +7,21 @@ module DebtCeiling
                    :grade_points, :method_count_multiplier, :ideal_max_line_count,
                    :cost_per_line_over_ideal
 
+    attr_reader :analysed_module
     def_delegators :analysed_module,
                    :smells, :methods_count, :complexity, :duplication, :rating
 
     def_delegators :file_attributes,
-                   :analysed_module, :linecount
+                  :linecount, :path
 
     def_delegator  :debt_amount, :to_i
 
+
     def initialize(file_attributes)
       @file_attributes  = file_attributes
-      @debt_amount      = cost_from_static_analysis_points
+      @analysed_module  = Rubycritic.create(mode: :ci, format: :json, paths: Array(path)).critique.first
+      # require 'pry'; binding.pry
+      @debt_amount      = cost_from_static_analysis_points if analysed_module
     end
 
     private

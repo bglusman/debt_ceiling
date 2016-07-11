@@ -6,14 +6,19 @@
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
 #DebtCeiling
 
-Main goal is to enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project programmatically via a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite.  Eventually perhaps will aid in visualizing this quantification as a graph or graphs, and breaking down debt into various categories and sources.  Currently it highlights the single largest source of debt as a suggestion for reduction, as well out outputting the total quantity, both in test suite integration or by manually running `debt_ceiling` binary.
+Main goal is to track and/or enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project, however you choose to define and quantify technical debt. Uses a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite, or from CLI.
 
 ## Compatibility
 
-Travis tests are running on 1.9.3, 2.1.1, 2.2.2, 2.3.0, Rubinius 2.8 and JRuby 1.9 mode.
+Travis tests are running on MRI 2.1.1, 2.2.5, and 2.3.1, JRuby (1.9 mode and JRuby 9120), and Rubinius (3.2.0)
+Versions up through 0.4.0 supported Ruby 1.9.3, but JSON gem now requires ruby 2.0 or later, so v0.5.0 and up are Ruby 2+ only
 
 ## Current Features
 
+* Compiled todo list, with optional author/date info per todo
+  * All custom/manual sources of debt are output via `debt_ceiling todo`
+  * Add a `--details` flag to include author/date info, or set `todo_author_date_info` to true in config to always show.
+  * Defaults to only showing via explicit todo, but can show during audit output if set `report_todos` to true in config.
 * configuring points per [RubyCritic](https://github.com/whitesmith/rubycritic) grade per file
 * configuring multipliers for specific static analysis attributes, including complexity, duplication, method count, reek smells
 * configuring ideal max lines per file/module, and a per line penalty for each additional line

@@ -12,7 +12,7 @@ module DebtCeiling
     attr_reader :accounting, :dir, :loaded
 
     def_delegators :configuration,
-                   :debt_ceiling, :reduction_target, :reduction_date, :max_debt_per_module
+                   :debt_ceiling, :reduction_target, :reduction_date, :max_debt_per_module, :debt_types, :report_todos
 
     def_delegator :accounting, :total_debt
 
@@ -20,8 +20,10 @@ module DebtCeiling
       @loaded     = opts[:preconfigured]
       @dir        = dir
       @accounting = perform_accounting
+      @todos      = find_todos if report_todos && debt_types.include?(CustomDebt)
       accounting.print_results unless opts[:skip_report]
       puts failure_message unless opts[:silent]
+      puts @todos if report_todos
       fail_test if failed_condition? && !opts[:warn_only]
     end
 
@@ -30,6 +32,10 @@ module DebtCeiling
     end
 
     private
+
+    def find_todos
+      Todo.new(@dir, accounting: accounting, preconfigured: true).find_todos
+    end
 
     def perform_accounting
       DebtCeiling.load_configuration unless loaded

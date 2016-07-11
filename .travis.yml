@@ -1,12 +1,11 @@
 language: ruby
 rvm:
-  - 1.9.3
   - jruby-19mode # JRuby in 1.9 mode
-  - jruby-9.0.0.0
+  - jruby-9.1.2.0
   - 2.1.1
-  - 2.2.2
-  - 2.3.0
-  - rbx-2.8
+  - 2.2.5
+  - 2.3.1
+  - rbx-3.20
 addons:
   code_climate:
     repo_token: cd7df1b0973b1b3323ce8b2f09fe9c087010115889fed6

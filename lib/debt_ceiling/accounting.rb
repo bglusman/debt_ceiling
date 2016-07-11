@@ -9,11 +9,11 @@ module DebtCeiling
     alias_method :max_module, :analysed_module
     def initialize(path)
       @path = path
-      calc_debt_for_modules(construct_rubycritic_modules(path))
+      calc_debt_for_modules(construct_paths(path))
     end
 
-    def calc_debt_for_modules(analysed_modules)
-      @debts      = analysed_modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
+    def calc_debt_for_modules(modules)
+      @debts      = modules.map {|mod| Debt.new(FileAttributes.new(mod)) }
       @total_debt = get_total_debt
       @max_debt   = get_max_debt
     end
@@ -34,6 +34,10 @@ module DebtCeiling
       debts.max_by(&:to_i)
     end
 
+    def report_text
+      Todo.output(debts)
+    end
+
     def get_total_debt
       debts.map(&:to_i).reduce(:+)
     end
@@ -46,8 +50,12 @@ module DebtCeiling
       max_module.smells.count
     end
 
-    def construct_rubycritic_modules(path)
-      Rubycritic.create(mode: :ci, format: :json, paths: Array(path)).critique
+    def construct_paths(dir)
+      if File.directory?(dir)
+        Dir[ File.join(dir, '**', '*') ].reject { |path| File.directory?(path) || !(/\.rb$/ =~ path) }
+      else
+        Array(dir)
+      end
     end
   end
 end

@@ -1,7 +1,13 @@
 #!/usr/bin/env ruby
 require_relative '../lib/debt_ceiling'
+def path_arg(position)
+  ARGV[position] && !ARGV[position].match('--') ? ARGV[position] : '.'
+end
+
 if ARGV[0] == 'dig'
-  DebtCeiling.dig(ARGV[1] ? ARGV[1] : '.')
+  DebtCeiling.dig(path_arg(1))
+elsif ARGV[0] == 'todo'
+  DebtCeiling.todo(path_arg(1))
 else
-  DebtCeiling.audit(ARGV[0] ? ARGV[0] : '.')
+  DebtCeiling.audit(path_arg(0))
 end
