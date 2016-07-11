@@ -10,7 +10,8 @@ Main goal is to track and/or enforce a technical debt ceiling and tech debt redu
 
 ## Compatibility
 
-Travis tests are running on MRI 1.9.3, 2.1.1, 2.2.5, and 2.3.1, JRuby (1.9 mode and JRuby 9120), and Rubinius (3.2.0)
+Travis tests are running on MRI 2.1.1, 2.2.5, and 2.3.1, JRuby (1.9 mode and JRuby 9120), and Rubinius (3.2.0)
+Versions up through 0.4.0 supported Ruby 1.9.3, but JSON gem now requires ruby 2.0 or later, so v0.5.0 and up are Ruby 2+ only
 
 ## Current Features
 
