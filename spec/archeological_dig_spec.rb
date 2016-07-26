@@ -6,7 +6,7 @@ COMMIT_SHA = '94f98c2'
 describe DebtCeiling::ArcheologicalDig do
 
   CONFIG_STRING = "fake_config_string"
-  COMMIT_SHA_MSG =  "debt_ceiling_#{COMMIT_SHA}_#{CONFIG_STRING}#{described_class::ARCHEOLOGY_RECORD_VERSION_NUMBER}\n            {\"debt\":100,\"failed\":false,\"commit\":\"#{COMMIT_SHA}\"}\n"
+  COMMIT_SHA_MSG =  "DebtCeiling_#{COMMIT_SHA}_#{CONFIG_STRING}#{described_class::ARCHEOLOGY_RECORD_VERSION_NUMBER}\n            {\"debt\":100,\"failed\":false,\"commit\":\"#{COMMIT_SHA}\"}\n"
 
   let(:fake_source_control) { double(DebtCeiling::SourceControlSystem::Git) }
   let(:fake_audit) { double(DebtCeiling::Audit) }
