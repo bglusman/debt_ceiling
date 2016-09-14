@@ -2,7 +2,10 @@ require 'configurations'
 require 'chronic'
 require 'sparkr'
 require 'rubycritic'
-require 'rubycritic/cli/application'
+require 'rubycritic/source_control_systems/base'
+require 'rubycritic/analysers_runner'
+require 'rubycritic/reporter'
+require 'rubycritic/commands/default'
 require 'ostruct'
 require 'forwardable'
 require_relative 'debt_ceiling/common_methods'
@@ -15,6 +18,18 @@ require_relative 'debt_ceiling/debt'
 require_relative 'debt_ceiling/compatibility'
 require_relative 'debt_ceiling/file_attributes'
 require_relative 'debt_ceiling/archeological_dig'
+
+module RubyCritic
+  class AnalysersRunner
+    ANALYSERS = [
+      Analyser::FlaySmells,
+      Analyser::FlogSmells,
+      Analyser::ReekSmells,
+      Analyser::Complexity,
+      Analyser::Attributes
+    ].freeze
+  end
+end
 
 module DebtCeiling
   include Configurations

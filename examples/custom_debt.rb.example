@@ -15,6 +15,6 @@ module DebtCeiling
     end
 
     #augment_debt is only called if measure_debt is undefined or returns nil/false
-    #for this instance of debt (which is 1:1 mapping of Rubycritic::AnalysedModule at the moment)
+    #for this instance of debt (which is 1:1 mapping of RubyCritic::AnalysedModule at the moment)
   end
 end
