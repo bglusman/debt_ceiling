@@ -13,6 +13,8 @@ matrix:
     - rvm: jruby-1.7.26
       env: JRUBY_OPTS="--dev -J-Djruby.launch.inproc=true -J-Xmx1024M"
     - rvm: rbx-3.60
+  allow_failures:
+    - rvm: rbx-3.60
 
 addons:
   code_climate:
