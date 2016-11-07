@@ -19,7 +19,7 @@ module DebtCeiling
 
     def initialize(file_attributes)
       @file_attributes  = file_attributes
-      @analysed_module  = Rubycritic.create(mode: :ci, format: :json, paths: Array(path)).critique.first
+      @analysed_module  = RubyCritic::CommandFactory.create(mode: :ci, format: :json, paths: Array(path)).critique.first
       # require 'pry'; binding.pry
       @debt_amount      = cost_from_static_analysis_points if analysed_module
     end
