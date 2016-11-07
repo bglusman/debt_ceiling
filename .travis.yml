@@ -1,6 +1,8 @@
 language: ruby
+sudo: required
+dist: trusty
 rvm:
-  - jruby-19mode # JRuby in 1.9 mode
+  - jruby-19mode
   - jruby-9.1.5.0
   - 2.1.1
   - 2.2.5
@@ -9,4 +11,4 @@ rvm:
 addons:
   code_climate:
     repo_token: cd7df1b0973b1b3323ce8b2f09fe9c087010115889fed6
-sudo: false
+
