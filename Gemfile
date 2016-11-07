@@ -4,6 +4,7 @@ gemspec
 # To support older versions, keep back some gems
 if RUBY_VERSION < '2.0.0'
   gem 'tins', '< 1.7.0'
+  gem 'term-ansicolor', '< 1.4.0'
 end
 
 group :development, :test do
