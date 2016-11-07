@@ -1,7 +1,7 @@
 language: ruby
 rvm:
   - jruby-19mode # JRuby in 1.9 mode
-  - jruby-9.1.2.0
+  - jruby-9.1.5.0
   - 2.1.1
   - 2.2.5
   - 2.3.1
