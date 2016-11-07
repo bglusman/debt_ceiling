@@ -1,13 +1,18 @@
 language: ruby
 sudo: required
 dist: trusty
-rvm:
-  - jruby-19mode
-  - jruby-9.1.5.0
-  - 2.1.1
-  - 2.2.5
-  - 2.3.1
-  - rbx-3.60
+
+matrix:
+  include:
+    - rvm: 2.1.10
+    - rvm: 2.2.5
+    - rvm: 2.3.1
+    - rvm: jruby-9.1.5.0
+      env: JRUBY_OPTS="--dev -J-Djruby.launch.inproc=true -J-Xmx1024M"
+    - rvm: jruby-1.7.26
+      env: JRUBY_OPTS="--dev -J-Djruby.launch.inproc=true -J-Xmx1024M"
+    - rvm: rbx-3.60
+
 addons:
   code_climate:
     repo_token: cd7df1b0973b1b3323ce8b2f09fe9c087010115889fed6
