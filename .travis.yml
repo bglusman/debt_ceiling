@@ -11,4 +11,8 @@ rvm:
 addons:
   code_climate:
     repo_token: cd7df1b0973b1b3323ce8b2f09fe9c087010115889fed6
-
+  # https://github.com/jruby/jruby/wiki/FAQs#why-is-jruby-so-slow-to-install-via-rvm
+  # https://docs.travis-ci.com/user/installing-dependencies#Installing-Packages-with-the-APT-Addon
+  apt:
+    packages:
+    - haveged
