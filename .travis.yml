@@ -1,7 +1,8 @@
 language: ruby
 sudo: required
 dist: trusty
-#cache: bundler
+# Please Note: It ISN'T possible to "cache: bundler" with default settings,
+# since RubyCritic will try critiquing that folder
 
 matrix:
   include:
