@@ -1,6 +1,6 @@
-require 'coveralls'
+#require 'coveralls'
 require 'pry'
-Coveralls.wear!
+#Coveralls.wear!
 
 RSpec.configure do |config|
   config.before { allow($stdout).to receive(:puts) }
