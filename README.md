@@ -4,7 +4,7 @@
 [![Debt Ceiling Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/bglusman/debt_ceiling)
 [![Stories in Ready](https://badge.waffle.io/bglusman/debt_ceiling.png?label=ready&title=Ready)](https://waffle.io/bglusman/debt_ceiling)
 [![Code Climate](https://codeclimate.com/github/bglusman/debt_ceiling/badges/gpa.svg)](https://codeclimate.com/github/bglusman/debt_ceiling)
-#DebtCeiling
+# DebtCeiling
 
 Main goal is to track and/or enforce a technical debt ceiling and tech debt reduction deadlines for your Ruby project, however you choose to define and quantify technical debt. Uses a configurable combination of static analysis and/or manual assignment/recognition from explicit source code references as part of your application's test suite, or from CLI.
 
