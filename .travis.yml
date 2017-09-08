@@ -13,9 +13,9 @@ matrix:
       env: JRUBY_OPTS="--debug"
     - rvm: jruby-1.7.27
       env: JRUBY_OPTS="--debug"
-    - rvm: rbx-3.60
+    - rvm: rbx-3.70
   allow_failures:
-    - rvm: rbx-3.60
+    - rvm: rbx-3.70
 
 addons:
   code_climate:
