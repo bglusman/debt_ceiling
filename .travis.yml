@@ -1,12 +1,27 @@
 language: ruby
-rvm:
-  - jruby-19mode # JRuby in 1.9 mode
-  - jruby-9.1.2.0
-  - 2.1.1
-  - 2.2.5
-  - 2.3.1
-  - rbx-3.20
+sudo: required
+dist: trusty
+# Please Note: It ISN'T possible to "cache: bundler" with default settings,
+# since RubyCritic will try critiquing that folder
+
+matrix:
+  include:
+    - rvm: 2.1.10
+    - rvm: 2.2.5
+    - rvm: 2.3.1
+    - rvm: jruby-9.1.13.0
+      env: JRUBY_OPTS="--debug"
+    - rvm: jruby-1.7.27
+      env: JRUBY_OPTS="--debug"
+    - rvm: rbx-3.70
+  allow_failures:
+    - rvm: rbx-3.70
+
 addons:
   code_climate:
     repo_token: cd7df1b0973b1b3323ce8b2f09fe9c087010115889fed6
-sudo: false
+  # https://github.com/jruby/jruby/wiki/FAQs#why-is-jruby-so-slow-to-install-via-rvm
+  # https://docs.travis-ci.com/user/installing-dependencies#Installing-Packages-with-the-APT-Addon
+  apt:
+    packages:
+    - haveged
