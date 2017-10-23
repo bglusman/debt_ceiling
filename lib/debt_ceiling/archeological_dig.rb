@@ -4,29 +4,34 @@ require 'digest/sha1'
 require 'json'
 module DebtCeiling
   class ArcheologicalDig
-    ARCHEOLOGY_RECORD_VERSION_NUMBER = "v0" #increment for backward incompatible changes in record format
-    attr_reader :source_control, :records, :cache, :path, :opts
-
-    def self.dig_json_key(path)
-      project_name = File.expand_path(path).split('/').last
-      "DebtCeiling_#{project_name}_#{ARCHEOLOGY_RECORD_VERSION_NUMBER}"
-    end
+    ARCHEOLOGY_RECORD_VERSION_NUMBER = "v1" #increment for backward incompatible changes in record format
+    attr_reader :source_control, :records, :cache, :project_name, :path, :opts
 
     def initialize(path='.', opts={})
-      @cache = AnalysisCache.new(opts[:analysis_cache])
       @path = path
       @opts = opts
+      @project_name = sanitized_project_name
+      @cache = AnalysisCache.new(project_name, opts[:analysis_cache])
       @source_control =  SourceControlSystem::Base.create
     end
 
     def process
       DebtCeiling.load_configuration unless opts[:preconfigured]
       @records = source_control.revisions_refs(path).map {|commit| process_commit(commit) }
-      cache.set(self.class.dig_json_key(path), records.to_json) if opts[:store_results]
+      cache.set(dig_json_key(path), records.to_json) if opts[:store_results]
       self
     end
 
     private
+
+    def sanitized_project_name
+      name = opts[:project_name] || File.expand_path(path).split('/').last
+      name.gsub('_', '-')
+    end
+
+    def dig_json_key(path)
+      "DebtCeiling_#{project_name}_#{ARCHEOLOGY_RECORD_VERSION_NUMBER}"
+    end
 
     def process_commit(commit)
       cache.get(commit) { audit_commit(commit) }
@@ -57,7 +62,7 @@ module DebtCeiling
     end
 
     def default_record(result, commit)
-      {debt: result.total_debt, failed: !!result.failed_condition?, commit: commit}
+      {'debt' => result.total_debt, 'failed' => !!result.failed_condition?, 'commit' => commit}
     end
 
   end

@@ -1,27 +1,16 @@
 require_relative "git_note_adapter"
 module DebtCeiling
   class AnalysisCache
-    attr_reader :adapter
-
-    def self.commit_identifier(commit)
-      "debt_ceiling_#{commit}_#{config_string}"
-    end
-
-    def self.config_string
-      @config_string ||= config_hash_string + ArcheologicalDig::ARCHEOLOGY_RECORD_VERSION_NUMBER
-    end
-
-    def self.config_hash_string
-      Digest::SHA1.hexdigest(DebtCeiling.config_array.to_json)
-    end
-
-    def initialize(adapter=nil)
+    attr_reader :adapter, :project_name
+    ANALYSIS_CACHE_HASH_LENGTH = 6
+    def initialize(project_name, adapter=nil)
       @adapter = adapter
+      @project_name = project_name
       @adapter ||= auto_select_adapter
     end
 
     def get(commit)
-      text = adapter.get(self.class.commit_identifier(commit))
+      text = adapter.get(commit_identifier(commit))
       if text
         extract_record_from_text(text)
       else
@@ -37,15 +26,15 @@ module DebtCeiling
 
     def create_text_on_commit(commit, result)
       text = <<-DATA
-            #{self.class.commit_identifier(commit)}
+            #{commit_identifier(commit)}
             #{result.to_json}
             DATA
-      adapter.set(self.class.commit_identifier(commit), text)
+      adapter.set(commit_identifier(commit), text)
     end
 
     def extract_record_from_text(text)
       text.split("\n").each_cons(2).each do |comment, json|
-        return JSON.parse(json) if comment.match(AnalysisCache.config_string)
+        return JSON.parse(json) if comment.match(config_string)
       end
     end
 
@@ -59,6 +48,18 @@ module DebtCeiling
       port = ENV['REDIS_PORT'] ? ENV['REDIS_PORT'].to_i : 6379
       Redis.new(host: host, port: port)
       rescue LoadError
+    end
+
+    def commit_identifier(commit)
+      "DebtCeiling_#{project_name}_#{commit}_#{config_string}"
+    end
+
+    def config_string
+      @config_string ||= "#{config_hash_string}_#{ArcheologicalDig::ARCHEOLOGY_RECORD_VERSION_NUMBER}"
+    end
+
+    def config_hash_string
+      Digest::SHA1.hexdigest(DebtCeiling.config_array.to_json).slice(0...ANALYSIS_CACHE_HASH_LENGTH)
     end
   end
 end
